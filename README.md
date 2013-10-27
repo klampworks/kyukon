@@ -1,14 +1,14 @@
 About 
 ======
 
-An asynchronous parallel networking library. This project makes full use of the multiparadigm nature of C++, utilising an imperative style where classes are not needed, an Object Oriented style where inheritance and polymorphism actually is needed and functional style higher order functions and control flow. 
+An asynchronous parallel networking library. This project makes full use of the multi-paradigm nature of C++, utilising an Imperative style where classes are not needed, an Object Oriented style where inheritance and polymorphism actually is needed and Functional style higher order functions and control flow. 
 
 Kyukon was the original name of Ninetails, the Pokemon.
 
 Purpose
 ======
 
-This library is designed for envoronments where network traffic is limited by an exteral factor. Where a series of unrelated netowrk operations would otherwise be done in serial, Kyukon allows them to act in paralell, thus minimising wasted badwidth and increasing the speed of the overall operation. For example if a webserver limits each connection to 50kb/s then, assuming your DSL bandwidth is 500kb/s, opening 10 paralell connections would yeild a 10x speedup.
+This library is designed for environment where network traffic is limited by an external factor. Where a series of unrelated network operations would otherwise be done in serial, Kyukon allows them to act in parallel, thus minimising wasted bandwidth and increasing the speed of the overall operation. For example if a webserver limits each connection to 50kb/s then, assuming your DSL bandwidth is 500kb/s, opening 10 parallel connections would yield a 10x speedup.
 
 How it Works
 ======
@@ -19,9 +19,9 @@ How it Works
 	4) Continue processing from the callback function once it is invoked by the library.
 
 At the moment the library only supports HTTP GET requests and depends on curl.
-The library expects task objects to be pointers to avoid unesessry copying of data. Due to the aynchronous nature of the library, these objects should be allocated on the heap and deleted in the user defined callback functions. 
-Each callback is called in its own thread in order to keep the netowrking threads free for networking operations.
-This makes Kyukon ideal for paralell webcrawlers modeled as an FSM where each callback corresponds to a different state or type-of-webpage.
+The library expects task objects to be pointers to avoid unnecessary copying of data. Due to the asynchronous nature of the library, these objects should be allocated on the heap and deleted in the user defined callback functions. 
+Each callback is called in its own thread in order to keep the networking threads free for networking operations.
+This makes Kyukon ideal for parallel webcrawlers modeled as an FSM where each callback corresponds to a different state or type-of-webpage.
 
 Hello Kitty
 ======
@@ -50,7 +50,7 @@ Below is a simple examples of how the can be used. This small example makes a Bi
 		//Set the url to grab.
 		t->set_url("http://www.bing.com/images/search?q=hello+kitty");
 
-		//Set the referer (some sites check this to avoiid hotlinking)
+		//Set the referer (some sites check this to avoid hotlinking)
 		t->set_ref("http://www.bing.com/images");
 
 		//Tell the library that we want this html stored as an std::string.
@@ -94,7 +94,7 @@ Below is a simple examples of how the can be used. This small example makes a Bi
 			t->set_url(tmp.substr(st, en));
 			t->set_ref(ref);
 
-			//This time we want the resut in the form of a file.
+			//This time we want the result in the form of a file.
 			//At the moment Kyukon decides the filename based on the url.
 			t->set_target_file();
 
