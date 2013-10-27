@@ -1,0 +1,9 @@
+AC_INIT([kyukon], [0.1])
+AM_INIT_AUTOMAKE([foreign])
+LT_INIT
+
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11
+XXFLAGS="$CXXFLAGS -std=c++11"
+
+AC_OUTPUT([Makefile])
