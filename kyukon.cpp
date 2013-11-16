@@ -7,21 +7,25 @@
 #include "kon.hpp"
 #include "task.hpp"
 #include <iostream>
+#include <ctime>
 
 namespace kyukon {
-
-std::queue<task*> queue;
-std::priority_queue<task*, std::vector<task*>, task> task_list;
-std::mutex list_mutex;
 
 bool keep_going = true;
 unsigned number_of_threads;
 unsigned max_queue_length = 100;
 
-void thread_run(unsigned);
 
-std::function<void()> crawl =  nullptr;
-bool do_crawl = false;
+std::function<void()> fillup =  nullptr;
+bool do_fillup = false;
+
+std::priority_queue<task*, std::vector<task*>, task> task_list;
+std::mutex list_mutex;
+long next_hit = 0;
+long interval = 10;
+
+
+void thread_run(unsigned);
 
 void init(unsigned no_threads, std::function<void()> fn) {
 
@@ -31,7 +35,7 @@ void init(unsigned no_threads, std::function<void()> fn) {
 		std::thread(thread_run, i).detach();
 	}
 
-	crawl = fn;
+	fillup = fn;
 }
 
 void add_task(task *t) {
@@ -53,12 +57,19 @@ task* get_task(unsigned thread_no) {
 
 	list_mutex.lock();
 
+	long tmp_time = time(NULL);
+
 	if (!task_list.empty()) {
-		ret = task_list.top();
-		task_list.pop();
+
+		if (tmp_time > next_hit) {
+
+			ret = task_list.top();
+			task_list.pop();
+			next_hit = tmp_time + interval;
+		}
 	} else {
-		if (do_crawl)
-			crawl();
+		if (do_fillup)
+			fillup();
 	}
 
 	list_mutex.unlock();
