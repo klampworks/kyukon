@@ -20,13 +20,18 @@ unsigned max_queue_length = 100;
 
 void thread_run(unsigned);
 
-void init(unsigned no_threads) {
+std::function<void()> crawl =  nullptr;
+bool do_crawl = false;
+
+void init(unsigned no_threads, std::function<void()> fn) {
 
 	number_of_threads = no_threads;
 
 	for (unsigned i = 0; i < no_threads; i++) {
 		std::thread(thread_run, i).detach();
 	}
+
+	crawl = fn;
 }
 
 void add_task(task *t) {
@@ -51,6 +56,9 @@ task* get_task(unsigned thread_no) {
 	if (!task_list.empty()) {
 		ret = task_list.top();
 		task_list.pop();
+	} else {
+		if (do_crawl)
+			crawl();
 	}
 
 	list_mutex.unlock();
