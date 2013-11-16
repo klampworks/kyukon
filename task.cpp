@@ -1,6 +1,8 @@
 #include "task.hpp"
 
-#include <iostream>
+task::task(unsigned site_id) {
+	this->site_id = site_id;
+}
 
 task::task() {}
 
@@ -64,6 +66,14 @@ void task::set_filepath(const std::string &filepath) {
 	this->filepath =filepath;
 }
 
+void task::set_max_retries(unsigned max_retries) {
+	this->max_retries = max_retries;
+}
+
+bool task::inc_retries() {
+	return ++retries == max_retries;
+}
+
 std::string task::get_url() const {
 	return url;
 }
@@ -98,4 +108,8 @@ int task::get_priority() const {
 
 const std::string task::get_filepath() const {
 	return filepath;
+}
+
+unsigned task::get_retries() const {
+	return retries;
 }

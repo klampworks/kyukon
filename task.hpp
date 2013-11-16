@@ -7,6 +7,7 @@
 class task {
 
 	public:
+		task(unsigned);
 		task();
 
 		void prepare_task(const std::string &url, const std::string &ref, const std::function<void(task*)> &callback);
@@ -22,7 +23,8 @@ class task {
 		void set_target_string();
 		void set_priority(const int &priority);
 		void inc_priority();
-		void set_max_retries();
+		void set_max_retries(unsigned);
+		bool inc_retries(); 
 		void set_filepath(const std::string &filepath);
 
 		std::string get_url() const;
@@ -34,6 +36,7 @@ class task {
 		int get_target() const;
 		int get_priority() const;
 		const std::string get_filepath()const;
+		unsigned get_retries() const;
 
 		bool operator()(const task *t1, const task *t2) {
 			return (t1->get_priority() >= t2->get_priority());
@@ -45,4 +48,6 @@ class task {
 		double data_size;
 		std::function<void(task*)> callback;
 		int target, priority;
+		unsigned max_retries, retries;
+		unsigned site_id;
 };
