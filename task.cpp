@@ -1,7 +1,7 @@
 #include "task.hpp"
 
-task::task(unsigned site_id) {
-	this->site_id = site_id;
+task::task(unsigned domain_id) {
+	this->domain_id = domain_id;
 }
 
 task::task() {}
@@ -112,4 +112,8 @@ const std::string task::get_filepath() const {
 
 unsigned task::get_retries() const {
 	return retries;
+}
+
+unsigned task::get_domain_id() const {
+	return domain_id;
 }

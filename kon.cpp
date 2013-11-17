@@ -11,7 +11,8 @@ kon::kon(const std::string &proxy_address, bool socks) {
 
 	init_curl();
 
-	curl_easy_setopt(this->curl, CURLOPT_PROXY, proxy_address.c_str()); 
+	if (!proxy_address.empty())
+		curl_easy_setopt(this->curl, CURLOPT_PROXY, proxy_address.c_str()); 
 
 	//IMPORTANT to prevent DNS leaks.
 	if (socks)

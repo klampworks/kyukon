@@ -37,6 +37,7 @@ class task {
 		int get_priority() const;
 		const std::string get_filepath()const;
 		unsigned get_retries() const;
+		unsigned get_domain_id() const;
 
 		bool operator()(const task *t1, const task *t2) {
 			return (t1->get_priority() >= t2->get_priority());
@@ -49,5 +50,5 @@ class task {
 		std::function<void(task*)> callback;
 		int target, priority;
 		unsigned max_retries, retries;
-		unsigned site_id;
+		unsigned domain_id;
 };
