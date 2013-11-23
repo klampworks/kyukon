@@ -30,7 +30,7 @@ std::map<unsigned /*domain_id*/, std::map<unsigned /*thread_id*/, long>> next_hi
 
 void thread_run(const std::pair<std::string, bool>&, unsigned);
 
-void init(const std::vector<std::pair<std::string, bool>> &proxy_info, std::function<void()> fn) {
+void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 	number_of_threads = proxy_info.size();
 
@@ -42,6 +42,10 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info, std::func
 		thread_ids.push_back(i);
 	}
 
+}
+
+void set_do_fillup(bool b, unsigned domain_id) {
+	do_fillup[domain_id] = b;
 }
 
 void add_task(task *t, unsigned domain_id) {
