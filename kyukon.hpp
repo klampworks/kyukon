@@ -1,6 +1,6 @@
 #pragma once
 
-class task;
+#include "task.hpp"
 #include <functional>
 #include <vector>
 
