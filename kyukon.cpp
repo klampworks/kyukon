@@ -21,12 +21,7 @@ unsigned max_queue_length = 100;
 std::vector<unsigned> domain_ids;
 std::vector<unsigned> thread_ids;
 
-std::map<unsigned /*domain_id*/, std::priority_queue<task*, std::vector<task*>, task>> task_list;
-std::map<unsigned /*domain_id*/, std::mutex> list_mutex;
-std::map<unsigned /*domain_id*/, long> interval;
-std::map<unsigned /*domain_id*/, std::function<void()>> fillup;
-std::map<unsigned /*domain_id*/, bool> do_fillup;
-std::map<unsigned /*domain_id*/, std::map<unsigned /*thread_id*/, long>> next_hit;
+std::map<unsigned /*domain_id*/, domain_settings> settings;
 
 void thread_run(const std::pair<std::string, bool>&, unsigned);
 
@@ -45,7 +40,7 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 }
 
 void set_do_fillup(bool b, unsigned domain_id) {
-	do_fillup[domain_id] = b;
+	settings[domain_id].do_fillup = b;
 }
 
 void add_task(task *t, unsigned domain_id) {
@@ -62,21 +57,19 @@ void add_task(task *t, unsigned domain_id) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
-	list_mutex[domain_id].lock();
+	settings[domain_id].list_mutex.lock();
 	my_task_list->push(t);
-	list_mutex[domain_id].unlock();
+	settings[domain_id].list_mutex.unlock();
 }
 
-void signup(unsigned domain_id, long interval_p, std::function<void()> fn) {
+void signup(unsigned domain_id, domain_settings&& set) {
 
 	std::vector<unsigned> domain_ids;
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) == domain_ids.end()) {
 		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
 	}
 
-	interval[domain_id] = interval_p;
-	fillup[domain_id] = fn;
-	do_fillup[domain_id] = false;
+	settings[domain_id] = set;
 
 	for (unsigned thread_id : thread_ids) {
 		next_hit[domain_id][thread_id] = 0;
@@ -104,21 +97,21 @@ task* get_task(unsigned thread_no) {
 		return nullptr;
 
 	task *ret = nullptr;
-	list_mutex[domain].lock();
+	settings.[domain].list_mutex.lock();
 
 	long tmp_time = time(NULL);
 
-	if (!task_list[domain].empty()) {
+	if (!settings.[domain].task_list.empty()) {
 
-		ret = task_list[domain].top();
-		task_list[domain].pop();
+		ret = settings.[domain].task_list.top();
+		settings[domain].task_list.pop();
 		
 	} else {
-		if (do_fillup[domain])
-			fillup[domain]();
+		if (settings[domain].do_fillup)
+			settings.[domain].fillup();
 	}
 
-	list_mutex[domain].unlock();
+	settings[domain].list_mutex.unlock();
 	return ret;
 }
 
