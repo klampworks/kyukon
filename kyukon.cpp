@@ -22,6 +22,7 @@ std::vector<unsigned> domain_ids;
 std::vector<unsigned> thread_ids;
 
 std::map<unsigned /*domain_id*/, domain_settings> settings;
+std::map<unsigned /*domain_id*/, std::map<unsigned /*thread_id*/, long>> next_hit;
 
 void thread_run(const std::pair<std::string, bool>&, unsigned);
 
@@ -50,16 +51,16 @@ void add_task(task *t, unsigned domain_id) {
 		return;
 	}
 
-	auto *my_task_list = &task_list[domain_id];
+	auto *my_task_list = &settings[domain_id].task_list;
 
 	while (my_task_list->size() > max_queue_length) {
 		std::cout << "Queue limit reached! Waiting..." << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
-	settings[domain_id].list_mutex.lock();
+	settings[domain_id].list_mutex->lock();
 	my_task_list->push(t);
-	settings[domain_id].list_mutex.unlock();
+	settings[domain_id].list_mutex->unlock();
 }
 
 void signup(unsigned domain_id, domain_settings&& set) {
@@ -69,7 +70,7 @@ void signup(unsigned domain_id, domain_settings&& set) {
 		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
 	}
 
-	settings[domain_id] = set;
+	std::swap(settings[domain_id], set);
 
 	for (unsigned thread_id : thread_ids) {
 		next_hit[domain_id][thread_id] = 0;
@@ -97,21 +98,21 @@ task* get_task(unsigned thread_no) {
 		return nullptr;
 
 	task *ret = nullptr;
-	settings.[domain].list_mutex.lock();
+	settings[domain].list_mutex->lock();
 
 	long tmp_time = time(NULL);
 
-	if (!settings.[domain].task_list.empty()) {
+	if (!settings[domain].task_list.empty()) {
 
-		ret = settings.[domain].task_list.top();
+		ret = settings[domain].task_list.top();
 		settings[domain].task_list.pop();
 		
 	} else {
 		if (settings[domain].do_fillup)
-			settings.[domain].fillup();
+			settings[domain].fillup();
 	}
 
-	settings[domain].list_mutex.unlock();
+	settings[domain].list_mutex->unlock();
 	return ret;
 }
 
@@ -145,7 +146,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 		long dom = current_task->get_domain_id();
 
-		next_hit[dom][threadno] = time(NULL) + interval[dom];
+		next_hit[dom][threadno] = time(NULL) + settings[dom].interval;
 
 		if (current_task->get_callback())
 			std::thread(current_task->get_callback(), current_task).detach();
