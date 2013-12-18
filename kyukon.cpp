@@ -66,8 +66,10 @@ void add_task(task *t, unsigned domain_id) {
 void signup(unsigned domain_id, domain_settings&& set) {
 
 	std::vector<unsigned> domain_ids;
-	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) == domain_ids.end()) {
+
+	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) != domain_ids.end()) {
 		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
+		return;
 	}
 
 	std::swap(settings[domain_id], set);
