@@ -86,7 +86,7 @@ void initial_callback(task *t) {
 
         t->set_callback(&final_callback);
 
-        kyukon::add_task(t);
+        kyukon::add_task(t, 1);
 
         //Increment the number of items we expect to be returned.
         expected++;
