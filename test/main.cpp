@@ -13,31 +13,35 @@ void final_callback(task*);
 
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
-    //Initialse the library with 2 threads.
-    kyukon::init(2);
+	//Initialse the library with 2 threads.
+	std::vector<std::pair<std::string, bool>> p = {
+		{"", false},
+		{"", false}
+	};
+	kyukon::init(p);
 
-    //Create a new task.
-    task *t = new task();
+	//Create a new task.
+	task *t = new task();
 
-    //Set the url to grab.
-    t->set_url("http://www.bing.com/images/search?q=hello+kitty");
+	//Set the url to grab.
+	t->set_url("http://www.bing.com/images/search?q=hello+kitty");
 
-    //Set the referer (some sites check this to avoid hotlinking)
-    t->set_ref("http://www.bing.com/images");
+	//Set the referer (some sites check this to avoid hotlinking)
+	t->set_ref("http://www.bing.com/images");
 
-    //Tell the library that we want this html stored as an std::string.
-    t->set_target_string();
+	//Tell the library that we want this html stored as an std::string.
+	t->set_target_string();
 
-    //Tell the library which function to call when it has grabbed the requested page.
-    t->set_callback(&initial_callback);
+	//Tell the library which function to call when it has grabbed the requested page.
+	t->set_callback(&initial_callback);
 
-    //Add the task to the queue for processing.
-    kyukon::add_task(t);
+	//Add the task to the queue for processing.
+	kyukon::add_task(t);
 
-    //Avoid main returning until we have what we came for.
-    while(keep_alive);
+	//Avoid main returning until we have what we came for.
+	while(keep_alive);
 
-    BOOST_CHECK( true /* test assertion */ );
+	BOOST_CHECK( true /* test assertion */ );
 }
 
 void initial_callback(task *t) {
