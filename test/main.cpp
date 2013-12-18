@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	t->set_callback(&initial_callback);
 
 	//Add the task to the queue for processing.
-	kyukon::add_task(t);
+	kyukon::add_task(t, 1);
 
 	//Avoid main returning until we have what we came for.
 	while(keep_alive);
