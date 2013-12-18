@@ -13,12 +13,16 @@ void final_callback(task*);
 
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
+	//TODO this is dumb if you're not planning to use proxies.
 	//Initialse the library with 2 threads.
 	std::vector<std::pair<std::string, bool>> p = {
 		{"", false},
 		{"", false}
 	};
 	kyukon::init(p);
+
+	//TODO this should return a generated domain id.
+	kyukon::signup(1, domain_settings());
 
 	//Create a new task.
 	task *t = new task();
