@@ -34,7 +34,7 @@ struct domain_settings {
 namespace kyukon {
 
 	void init(const std::vector<std::pair<std::string, bool>>&);
-	void signup(unsigned domain_id, domain_settings*);
+	void signup(unsigned domain_id, domain_settings&&);
 	void add_task(task *t, unsigned);
 	void set_do_fillup(bool, unsigned);
 	//extern bool do_fillup;
