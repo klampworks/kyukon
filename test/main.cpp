@@ -42,6 +42,10 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	//Add the task to the queue for processing.
 	kyukon::add_task(t, 1);
 
+	//Tell kyukon it does not need to call another function to fill up the
+	//task list, just run with what we just added.
+	kyukon::set_do_fillup(1, false);
+
 	//Avoid main returning until we have what we came for.
 	while(keep_alive);
 
