@@ -11,7 +11,7 @@ open $in, '>', $path . "index.html";
 for ($i = 0; $i < 10; $i++) {
 
 	my $name = `cat /usr/share/dict/propernames | shuf | head -1`;	
-	print $in "$name\n";
+	print $in "$name";
 	
 	my $new_dir = $dl_path . $name;
 	`dd count=10 if=/dev/urandom of=$new_dir`;
