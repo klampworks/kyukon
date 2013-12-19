@@ -74,17 +74,9 @@ void signup(unsigned domain_id, domain_settings&& set) {
 		return;
 	}
 
-puts("pre");
-
-	std::cout << "Copying settings for domain " << domain_id << std::endl;
-
-	
-	std::cout << "Settings are " << set.interval << std::endl;
 	//std::swap(settings[domain_id], set);
 
-	//this line casues a crash.
 	settings[domain_id] = set;
-puts("here");
 
 	for (unsigned thread_id : thread_ids) {
 		next_hit[domain_id][thread_id] = 0;
@@ -127,6 +119,8 @@ task* get_task(unsigned thread_no) {
 	} else {
 		if (settings[domain].do_fillup)
 			settings[domain].fillup();
+		else
+			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
 	}
 
 	//settings[domain].list_mutex->unlock();
