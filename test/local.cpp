@@ -7,9 +7,12 @@
 
 std::vector<std::string> parse_index(const std::string &);
 void process_index(task*);
+void items_callback(task*);
+void man_callback(task*);
 
-//Prevent the while loop from optimising itself out.
+//Prevent the while loops from optimising itself out.
 volatile bool keep_alive = true;
+volatile int count = 0;
 
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
@@ -34,28 +37,35 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	BOOST_CHECK( true /* test assertion */ );
 }
 
-void process_index(task *t) {
+void process_index(task *tt) {
 
-	keep_alive = false;
-	kyukon::stop();
+	std::vector<std::string> l = parse_index(tt->get_data());
+	delete tt;
 
-	std::vector<std::string> l = parse_index(t->get_data());
-
-	const char *path = "/var/www/localhost/htdocs/dl/";
+	const char *path = "127.0.0.1/dl/";
 
 	for (const auto &s : l) {
 
 		std::string togo(std::string(path) + s);
-		std::cout << togo << std::endl;
+
+		task *t = new task();
+		t->set_url(togo);
+		t->set_target_file();
+		t->set_callback(&items_callback);
+		kyukon::add_task(t, 1);
 	}
 
 	std::string man(std::string(path) + "manifest");
-	std::cout << man << std::endl;
+
+	task *t = new task();
+	t->set_url(man);
+	t->set_target_file();
+	t->set_callback(&man_callback);
+	kyukon::add_task(t, 1);
+
 }
 
 std::vector<std::string> parse_index(const std::string &data) {
-
-	const char *filename = "/var/www/localhost/htdocs/index.html";
 
 	std::vector<std::string> ret;
 
@@ -69,4 +79,17 @@ std::vector<std::string> parse_index(const std::string &data) {
 
 	//Copy ellision.
 	return std::move(ret);
+}
+
+void man_callback(task *t) {
+
+	while(count < 10);
+	keep_alive = false;
+	kyukon::stop();
+}
+
+void items_callback(task *t) {
+
+	count++;
+	delete t;
 }
