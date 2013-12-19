@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	while(keep_alive);
 
-	BOOST_CHECK( true /* test assertion */ );
+	//Inverted because 0 means no errors for exit codes.
+	BOOST_CHECK(!system("md5sum -c manifest"));
 }
 
 void process_index(task *tt) {
