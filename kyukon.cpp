@@ -119,7 +119,7 @@ task* get_task(unsigned thread_no) {
 		settings[domain].task_list.pop();
 		
 	} else {
-		if (settings[domain].do_fillup)
+		if (settings[domain].do_fillup && settings[domain].fillup)
 			settings[domain].fillup();
 		else
 			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
@@ -158,13 +158,14 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 		m_kon.grab(current_task);
 		std::cout << my_threadno << ": Finished " << current_task->get_url() << std::endl;;
 
+
 		long dom = current_task->get_domain_id();
 
 		next_hit[dom][threadno] = time(NULL) + settings[dom].interval;
 
-		if (current_task->get_callback())
+		if (current_task->get_callback()) {
 			std::thread(current_task->get_callback(), current_task).detach();
-		else
+		} else
 			delete current_task;
 	}
 }
