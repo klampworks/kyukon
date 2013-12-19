@@ -18,7 +18,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 my $f = $dl_path . "manifest";
-`md5sum $dl_path* > $f`;
+`cd $dl_path && md5sum * > $f`;
 
 `chmod -R 777 $path`;
 `chown -R lighttpd:lighttpd $path`;
