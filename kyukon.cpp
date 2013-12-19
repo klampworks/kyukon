@@ -60,9 +60,9 @@ void add_task(task *t, unsigned domain_id) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
-	settings[domain_id].list_mutex->lock();
+	//settings[domain_id].list_mutex->lock();
 	my_task_list->push(t);
-	settings[domain_id].list_mutex->unlock();
+	//settings[domain_id].list_mutex->unlock();
 }
 
 void signup(unsigned domain_id, domain_settings&& set) {
@@ -115,7 +115,7 @@ task* get_task(unsigned thread_no) {
 		return nullptr;
 
 	task *ret = nullptr;
-	settings[domain].list_mutex->lock();
+	//settings[domain].list_mutex->lock();
 
 	long tmp_time = time(NULL);
 
@@ -129,7 +129,7 @@ task* get_task(unsigned thread_no) {
 			settings[domain].fillup();
 	}
 
-	settings[domain].list_mutex->unlock();
+	//settings[domain].list_mutex->unlock();
 	return ret;
 }
 
