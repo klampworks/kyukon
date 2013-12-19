@@ -7,13 +7,15 @@
 
 std::vector<std::string> parse_index(void);
 void process_index(task*);
+
+//Prevent the while loop from optimising itself out.
 volatile bool keep_alive = true;
 
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	std::vector<std::pair<std::string, bool>> p = {
 		{"", false},
-		//{"", false}
+		{"", false}
 	};
 	kyukon::init(p);
 
