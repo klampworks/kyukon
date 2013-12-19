@@ -17,6 +17,9 @@ for ($i = 0; $i < 10; $i++) {
 	`dd count=10 if=/dev/urandom of=$new_dir`;
 }
 
+my $f = $dl_path . "manifest";
+`md5sum $dl_path* > $f`;
+
 `chmod -R 777 $path`;
 `chown -R lighttpd:lighttpd $path`;
 close $in;
