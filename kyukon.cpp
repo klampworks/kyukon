@@ -141,22 +141,16 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 	while(keep_going) {
 
-		current_task = get_task(threadno);
+		do {
+			current_task = get_task(threadno);
 
-		if (!current_task) {
+			//TODO this is not cool.
+			if (!keep_going)
+				return;
 
-			std::cout << my_threadno << ": No tasks, sleeping...." << std::endl;;
-			
-			do {
-				std::this_thread::sleep_for(std::chrono::seconds(2));
-				current_task = get_task(threadno);
-
-				//TODO this is not cool.
-				if (!keep_going)
-					return;
-
-			} while (!current_task);
-		}
+		//If current_task is null then wait some time and go to the start of the loop.
+		} while (!current_task && 
+			[](){std::this_thread::sleep_for(std::chrono::seconds(2)); return true;}());
 		
 		//TODO Fetching and Finishing look too similar.
 		std::cout << my_threadno << ": Fetching " << current_task->get_url() << std::endl;
