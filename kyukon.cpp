@@ -150,6 +150,11 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 			do {
 				std::this_thread::sleep_for(std::chrono::seconds(2));
 				current_task = get_task(threadno);
+
+				//TODO this is not cool.
+				if (!keep_going)
+					return;
+
 			} while (!current_task);
 		}
 		
