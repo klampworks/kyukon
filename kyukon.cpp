@@ -139,14 +139,12 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 	task *current_task = nullptr;
 
-	while(keep_going) {
+	for(;;) {
 
 		do {
-			current_task = get_task(threadno);
+			if (!keep_going) return;
 
-			//TODO this is not cool.
-			if (!keep_going)
-				return;
+			current_task = get_task(threadno);
 
 		//If current_task is null then wait some time and go to the start of the loop.
 		} while (!current_task && 
