@@ -38,6 +38,8 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 		thread_ids.push_back(i);
 	}
 
+	std::cout << "Number of threads = " << number_of_threads << std::endl;
+
 }
 
 void set_do_fillup(bool b, unsigned domain_id) {
@@ -72,7 +74,17 @@ void signup(unsigned domain_id, domain_settings&& set) {
 		return;
 	}
 
-	std::swap(settings[domain_id], set);
+puts("pre");
+
+	std::cout << "Copying settings for domain " << domain_id << std::endl;
+
+	
+	std::cout << "Settings are " << set.interval << std::endl;
+	//std::swap(settings[domain_id], set);
+
+	//this line casues a crash.
+	settings[domain_id] = set;
+puts("here");
 
 	for (unsigned thread_id : thread_ids) {
 		next_hit[domain_id][thread_id] = 0;
@@ -80,6 +92,9 @@ void signup(unsigned domain_id, domain_settings&& set) {
 }
 
 task* get_task(unsigned thread_no) {
+
+	//no op
+	return nullptr;
 
 	long now = time(NULL);
 	long min = now;
