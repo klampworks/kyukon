@@ -10,11 +10,16 @@ std::vector<std::string> parse_index(void);
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	std::vector<std::string> l = parse_index();
+	const char *path = "/var/www/localhost/htdocs/dl/";
 
 	for (const auto &s : l) {
 
-		std::cout << s << std::endl;
+		std::string togo(std::string(path) + s);
+		std::cout << togo << std::endl;
 	}
+
+	std::string man(std::string(path) + "manifest");
+	std::cout << man << std::endl;
 
 	BOOST_CHECK( !l.empty() /* test assertion */ );
 }
