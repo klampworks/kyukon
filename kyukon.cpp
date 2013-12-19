@@ -150,10 +150,9 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 		} while (!current_task && 
 			[](){std::this_thread::sleep_for(std::chrono::seconds(2)); return true;}());
 		
-		//TODO Fetching and Finishing look too similar.
-		std::cout << my_threadno << ": Fetching " << current_task->get_url() << std::endl;
+		std::cout << my_threadno << ": ^^^Fetching " << current_task->get_url() << std::endl;
 		m_kon.grab(current_task);
-		std::cout << my_threadno << ": Finished " << current_task->get_url() << std::endl;;
+		std::cout << my_threadno << ": $$$Finished " << current_task->get_url() << std::endl;;
 
 
 		long dom = current_task->get_domain_id();
