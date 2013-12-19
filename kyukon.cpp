@@ -170,4 +170,8 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 	}
 }
 
+void stop() {
+	keep_going = false;
+}
+
 }//namespace

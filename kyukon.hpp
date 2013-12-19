@@ -29,6 +29,7 @@ namespace kyukon {
 	void signup(unsigned domain_id, domain_settings&&);
 	void add_task(task *t, unsigned);
 	void set_do_fillup(bool, unsigned);
+	void stop();
 	//extern bool do_fillup;
 
 }
