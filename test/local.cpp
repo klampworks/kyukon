@@ -3,9 +3,9 @@
 #include "../kyukon.hpp"
 #include "../task.hpp"
 #include <iostream>
-#include <fstream>
+#include <sstream>
 
-std::vector<std::string> parse_index(void);
+std::vector<std::string> parse_index(const std::string &);
 void process_index(task*);
 
 //Prevent the while loop from optimising itself out.
@@ -38,9 +38,9 @@ void process_index(task *t) {
 
 	keep_alive = false;
 	kyukon::stop();
-	return;
 
-	std::vector<std::string> l = parse_index();
+	std::vector<std::string> l = parse_index(t->get_data());
+
 	const char *path = "/var/www/localhost/htdocs/dl/";
 
 	for (const auto &s : l) {
@@ -53,16 +53,16 @@ void process_index(task *t) {
 	std::cout << man << std::endl;
 }
 
-std::vector<std::string> parse_index() {
+std::vector<std::string> parse_index(const std::string &data) {
 
 	const char *filename = "/var/www/localhost/htdocs/index.html";
 
 	std::vector<std::string> ret;
 
-	std::ifstream ifs(filename);
+	std::stringstream ss(data);
 	std::string tmp;
 
-	while(std::getline(ifs, tmp)) {
+	while(std::getline(ss, tmp)) {
 		
 		ret.push_back(tmp);
 	}
