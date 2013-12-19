@@ -85,9 +85,6 @@ void signup(unsigned domain_id, domain_settings&& set) {
 
 task* get_task(unsigned thread_no) {
 
-	//no op
-	return nullptr;
-
 	long now = time(NULL);
 	long min = now;
 	unsigned domain = 0;
