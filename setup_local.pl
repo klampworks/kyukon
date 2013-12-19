@@ -17,4 +17,6 @@ for ($i = 0; $i < 10; $i++) {
 	`dd count=10 if=/dev/urandom of=$new_dir`;
 }
 
+`chmod -R 777 $path`;
+`chown -R lighttpd:lighttpd $path`;
 close $in;
