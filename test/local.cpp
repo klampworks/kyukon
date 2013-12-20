@@ -22,12 +22,12 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	};
 	kyukon::init(p);
 
-	kyukon::signup(1, domain_settings());
+	kyukon::signup(1, 0, nullptr);
 	kyukon::set_do_fillup(1, false);
 
 
 	task *t = new task();
-	t->set_url("127.0.0.1/index.html");
+	t->set_url("192.168.100.136/index.html");
 	t->set_target_string();
 	t->set_callback(&process_index);
 	kyukon::add_task(t, 1);
@@ -43,7 +43,7 @@ void process_index(task *tt) {
 	std::vector<std::string> l = parse_index(tt->get_data());
 	delete tt;
 
-	const char *path = "127.0.0.1/dl/";
+	const char *path = "192.168.100.136/dl/";
 
 	for (const auto &s : l) {
 
