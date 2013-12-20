@@ -24,10 +24,12 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	kyukon::init(p);
 
 	domain_id = kyukon::signup(0, nullptr);
-	kyukon::set_do_fillup(1, false);
+	kyukon::set_do_fillup(domain_id, false);
 
-	task *t = new task("192.168.100.136/index.html", "", task::STRING, &process_index);
-	kyukon::add_task(t, domain_id);
+	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+		task::STRING, &process_index);
+
+	kyukon::add_task(t);
 
 	while(keep_alive);
 
@@ -46,14 +48,14 @@ void process_index(task *tt) {
 
 		std::string togo(std::string(path) + s);
 
-		task *t = new task(std::move(togo), "", task::FILE, &items_callback);
-		kyukon::add_task(t, domain_id);
+		task *t = new task(domain_id, std::move(togo), "", task::FILE, &items_callback);
+		kyukon::add_task(t);
 	}
 
 	std::string man(std::string(path) + "manifest");
 
-	task *t = new task(std::move(man), "", task::FILE, &man_callback);
-	kyukon::add_task(t, domain_id);
+	task *t = new task(domain_id, std::move(man), "", task::FILE, &man_callback);
+	kyukon::add_task(t);
 
 }
 
