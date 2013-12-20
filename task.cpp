@@ -6,6 +6,21 @@ task::task(unsigned domain_id) {
 
 task::task() {}
 
+task::task(const std::string &url_p, const std::string &ref, 
+	task_target target, const std::function<void(task*)> &callback)
+{
+	
+	set_url(url);
+	set_ref(ref);
+	set_callback(callback);
+
+	if (target == STRING)
+		set_target_string();
+	else 
+		set_target_file();
+	
+}
+
 void task::prepare_task(const std::string &url, const std::string &ref, 
 			const std::function<void(task*)> &callback) {
 

@@ -8,8 +8,14 @@ class task {
 
 	public:
 
+		enum task_target {
+			STRING,	
+			FILE,
+		};
 		task(unsigned);
 		task();
+		task(const std::string &, const std::string &, 
+			task_target target,const std::function<void(task*)> &);
 
 		void prepare_task(const std::string &url, const std::string &ref, const std::function<void(task*)> &callback);
 		void prepare_result(const std::string &data, const long &status_code, const double &data_size);
@@ -44,10 +50,6 @@ class task {
 			return (t1->get_priority() >= t2->get_priority());
 		}
 
-		enum task_target {
-			STRING,	
-			FILE,
-		};
 
 	protected:
 		std::string url, ref, data, filepath;
