@@ -98,6 +98,7 @@ task* get_task(unsigned thread_no) {
 	long min = now;
 	unsigned domain = 0;
 
+	//TODO The invervals dont seem to be working...
 	for (auto &a: next_hit) {
 		
 		long tmp_hit = a.second[thread_no];
