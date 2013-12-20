@@ -9,6 +9,7 @@ std::vector<std::string> parse_index(const std::string &);
 void process_index(task*);
 void items_callback(task*);
 void man_callback(task*);
+unsigned domain_id = 0;
 
 //Prevent the while loops from optimising itself out.
 volatile bool keep_alive = true;
@@ -22,15 +23,11 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	};
 	kyukon::init(p);
 
-	kyukon::signup(1, 0, nullptr);
+	domain_id = kyukon::signup(0, nullptr);
 	kyukon::set_do_fillup(1, false);
 
-
-	task *t = new task();
-	t->set_url("192.168.100.136/index.html");
-	t->set_target_string();
-	t->set_callback(&process_index);
-	kyukon::add_task(t, 1);
+	task *t = new task("192.168.100.136/index.html", "", task::STRING, &process_index);
+	kyukon::add_task(t, domain_id);
 
 	while(keep_alive);
 
@@ -49,20 +46,14 @@ void process_index(task *tt) {
 
 		std::string togo(std::string(path) + s);
 
-		task *t = new task();
-		t->set_url(togo);
-		t->set_target_file();
-		t->set_callback(&items_callback);
-		kyukon::add_task(t, 1);
+		task *t = new task(std::move(togo), "", task::FILE, &items_callback);
+		kyukon::add_task(t, domain_id);
 	}
 
 	std::string man(std::string(path) + "manifest");
 
-	task *t = new task();
-	t->set_url(man);
-	t->set_target_file();
-	t->set_callback(&man_callback);
-	kyukon::add_task(t, 1);
+	task *t = new task(std::move(man), "", task::FILE, &man_callback);
+	kyukon::add_task(t, domain_id);
 
 }
 
