@@ -38,7 +38,7 @@ namespace kyukon {
 
 	void init(const std::vector<std::pair<std::string, bool>>&);
 	unsigned signup(int, std::function<void()>);
-	void add_task(task *t, unsigned);
+	void add_task(task *t);
 	void set_do_fillup(bool, unsigned);
 	void stop();
 	//extern bool do_fillup;

@@ -46,7 +46,9 @@ void set_do_fillup(bool b, unsigned domain_id) {
 	settings[domain_id].do_fillup = b;
 }
 
-void add_task(task *t, unsigned domain_id) {
+void add_task(task *t) {
+
+	unsigned domain_id = t->get_domain_id();
 
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) == domain_ids.end()) {
 		std::cout << "Unregistered domain_id " << domain_id << std::endl;
@@ -107,6 +109,7 @@ task* get_task(unsigned thread_no) {
 		}
 	}
 
+	//TODO this conditional will be wrong as some point in time.
 	if (min == now)
 		return nullptr;
 
@@ -163,6 +166,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 		long dom = current_task->get_domain_id();
 
 		next_hit[dom][threadno] = time(NULL) + settings[dom].interval;
+
 		if (current_task->get_callback()) {
 			std::thread(current_task->get_callback(), current_task).detach();
 		} else
