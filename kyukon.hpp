@@ -12,10 +12,11 @@ struct domain_settings {
 
 	std::priority_queue<task*, std::vector<task*>, task> task_list;
 	long interval;
+	std::mutex mutex;
 	std::function<void()> fillup;
 	bool do_fillup;
 
-	domain_settings() {
+	domain_settings() : mutex() {
 
 		interval = 0;
 		fillup = nullptr;
