@@ -79,12 +79,14 @@ void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
 
 	domain_ids.push_back(domain_id);
 
-	//std::swap(settings[domain_id], set);
-
 	domain_settings set;
 	set.interval = interval;
 	set.fillup = fillup;
-	settings[domain_id] = set;
+
+	//It is important to note that despite this being a move, the queue and mutex
+	//will both be lost. I don;t forsee any future reason we would want to copy
+	//a domain_settings struct and keep the original.
+	settings[domain_id] =  std::move(set);
 
 	for (unsigned thread_id : thread_ids) {
 		next_hit[domain_id][thread_id] = 0;
