@@ -111,24 +111,27 @@ task* get_task(unsigned thread_no) {
 		return nullptr;
 
 	task *ret = nullptr;
-	settings[domain].list_mutex.lock();
+
+	domain_settings &set = settings[domain];
+	set.list_mutex.lock();
 
 	long tmp_time = time(NULL);
 
-	if (!settings[domain].task_list.empty()) {
+	if (!set.task_list.empty()) {
 
-		ret = settings[domain].task_list.top();
-		settings[domain].task_list.pop();
+		ret = set.task_list.top();
+		set.task_list.pop();
 		
 	} else {
 
-		if (settings[domain].do_fillup && settings[domain].fillup)
-			settings[domain].fillup();
+		if (set.do_fillup && set.fillup)
+			set.fillup();
 		else
-			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
+			std::cout << "WARNING, queue is empty and no fillup function as "
+			"been set for domain " << domain << std::endl;
 	}
 
-	settings[domain].list_mutex.unlock();
+	set.list_mutex.unlock();
 	return ret;
 }
 
