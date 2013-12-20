@@ -12,8 +12,10 @@ class task {
 			STRING,	
 			FILE,
 		};
+
 		task(unsigned);
 		task();
+
 		task(const std::string &, const std::string &, 
 			task_target target,const std::function<void(task*)> &);
 
@@ -40,7 +42,7 @@ class task {
 		long get_status_code() const;
 		double get_data_size() const;
 		std::function<void(task*)> get_callback() const;
-		int get_target() const;
+		task_target get_target() const;
 		int get_priority() const;
 		const std::string get_filepath()const;
 		unsigned get_retries() const;
@@ -56,7 +58,8 @@ class task {
 		long status_code;
 		double data_size;
 		std::function<void(task*)> callback;
-		int target, priority;
+		task_target target; 
+		int priority;
 		unsigned max_retries, retries;
 		unsigned domain_id;
 };

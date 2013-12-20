@@ -6,19 +6,14 @@ task::task(unsigned domain_id) {
 
 task::task() {}
 
-task::task(const std::string &url_p, const std::string &ref, 
-	task_target target, const std::function<void(task*)> &callback)
+task::task(const std::string &url_p, const std::string &ref_p, 
+	task_target target_p, const std::function<void(task*)> &callback_p)
 {
 	
-	set_url(url);
-	set_ref(ref);
-	set_callback(callback);
-
-	if (target == STRING)
-		set_target_string();
-	else 
-		set_target_file();
-	
+	set_url(url_p);
+	set_ref(ref_p);
+	set_callback(callback_p);
+	target = target_p;
 }
 
 void task::prepare_task(const std::string &url, const std::string &ref, 
@@ -62,11 +57,11 @@ void task::set_callback(const std::function<void(task*)> &callback) {
 }
 
 void task::set_target_string() {
-	target = 0;
+	target = STRING;
 }
 
 void task::set_target_file() {
-	target = 1;
+	target = FILE;
 }
 
 void task::set_priority(const int &priority) {
@@ -113,7 +108,7 @@ std::function<void(task*)> task::get_callback() const {
 	return callback;
 }
 
-int task::get_target() const {
+task::task_target task::get_target() const {
 	return target;
 }
 
