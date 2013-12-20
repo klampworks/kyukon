@@ -86,6 +86,8 @@ unsigned signup(int interval, std::function<void()> fillup) {
 	for (unsigned thread_id : thread_ids) {
 		next_hit[new_id][thread_id] = 0;
 	}
+
+	return new_id;
 }
 
 task* get_task(unsigned thread_no) {
