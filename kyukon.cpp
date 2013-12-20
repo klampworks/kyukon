@@ -69,7 +69,7 @@ void add_task(task *t, unsigned domain_id) {
 	//settings[domain_id].list_mutex->unlock();
 }
 
-void signup(unsigned domain_id, domain_settings&& set) {
+void signup(unsigned domain_id, int interval, void(*fillup)()) {
 
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) != domain_ids.end()) {
 		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
@@ -80,6 +80,9 @@ void signup(unsigned domain_id, domain_settings&& set) {
 
 	//std::swap(settings[domain_id], set);
 
+	domain_settings set;
+	set.interval = interval;
+	set.fillup = fillup;
 	settings[domain_id] = set;
 
 	for (unsigned thread_id : thread_ids) {
