@@ -32,7 +32,7 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 	number_of_threads = proxy_info.size();
 
 	for (unsigned i = 0; i < number_of_threads; i++) {
-		//std::thread(thread_run, proxy_info[i], i).detach();
+
 		std::string a = proxy_info[i].first;
 		bool b = proxy_info[i].second;
 		std::thread(thread_run, proxy_info[i], i).detach();
@@ -40,7 +40,6 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 	}
 
 	std::cout << "Number of threads = " << number_of_threads << std::endl;
-
 }
 
 void set_do_fillup(bool b, unsigned domain_id) {
@@ -67,23 +66,25 @@ void add_task(task *t, unsigned domain_id) {
 	set.list_mutex.unlock();
 }
 
-void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
+unsigned signup(int interval, std::function<void()> fillup) {
 
-	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) != domain_ids.end()) {
-		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
-		return;
-	}
+	unsigned new_id;
 
-	domain_ids.push_back(domain_id);
+	if (!domain_ids.empty())
+		new_id = domain_ids.back() + 1;
+	else
+		new_id = 0;
+
+	domain_ids.push_back(new_id);
 
 	domain_settings set;
 	set.interval = interval;
 	set.fillup = fillup;
 
-	settings[domain_id] =  std::move(set);
+	settings[new_id] = std::move(set);
 
 	for (unsigned thread_id : thread_ids) {
-		next_hit[domain_id][thread_id] = 0;
+		next_hit[new_id][thread_id] = 0;
 	}
 }
 

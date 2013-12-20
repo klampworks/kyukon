@@ -37,7 +37,7 @@ struct domain_settings {
 namespace kyukon {
 
 	void init(const std::vector<std::pair<std::string, bool>>&);
-	void signup(unsigned domain_id, int, std::function<void()>);
+	unsigned signup(int, std::function<void()>);
 	void add_task(task *t, unsigned);
 	void set_do_fillup(bool, unsigned);
 	void stop();
