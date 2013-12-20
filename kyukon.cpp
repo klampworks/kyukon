@@ -123,11 +123,10 @@ task* get_task(unsigned thread_no) {
 		settings[domain].task_list.pop();
 		
 	} else {
-		std::cout << settings[domain].do_fillup << (bool)settings[domain].fillup << std::endl;
-		if (settings[domain].do_fillup && settings[domain].fillup) {
 
-		//	settings[domain].fillup();
-		} else
+		if (settings[domain].do_fillup && settings[domain].fillup)
+			settings[domain].fillup();
+		else
 			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
 	}
 
