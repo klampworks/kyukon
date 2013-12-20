@@ -6,11 +6,11 @@ task::task(unsigned domain_id) {
 
 task::task() {}
 
-
-task::task(const std::string &url_p, const std::string &ref_p, 
+task::task(unsigned domain_id, const std::string &url_p, const std::string &ref_p, 
 	task_target target_p, const std::function<void(task*)> &callback_p)
 {
 	
+	this->domain_id = domain_id;
 	set_url(url_p);
 	set_ref(ref_p);
 	set_callback(callback_p);
@@ -18,10 +18,11 @@ task::task(const std::string &url_p, const std::string &ref_p,
 }
 
 
-task::task(std::string &&url_p, std::string &&ref_p, 
+task::task(unsigned domain_id, std::string &&url_p, std::string &&ref_p, 
 	task_target target_p, std::function<void(task*)> &&callback_p)
 {
 
+	this->domain_id = domain_id;
 	std::swap(url, url_p);
 	std::swap(ref, ref_p);
 	std::swap(callback, callback_p);

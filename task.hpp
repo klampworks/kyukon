@@ -16,10 +16,10 @@ class task {
 		task(unsigned);
 		task();
 
-		task(const std::string &, const std::string &, 
+		task(unsigned, const std::string &, const std::string &, 
 			task_target target,const std::function<void(task*)> &);
 
-		task(std::string &&url_p, std::string &&ref_p, 
+		task(unsigned, std::string &&url_p, std::string &&ref_p, 
 			task_target target_p, std::function<void(task*)> &&callback_p);
 
 		void prepare_result(const std::string &data, const long &status_code, const double &data_size);
