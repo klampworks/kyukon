@@ -80,9 +80,6 @@ void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
 	set.interval = interval;
 	set.fillup = fillup;
 
-	//It is important to note that this is a move, the queue and mutex
-	//will both be lost. I dont forsee any future reason we would want to copy
-	//a domain_settings struct and keep the original.
 	settings[domain_id] =  std::move(set);
 
 	for (unsigned thread_id : thread_ids) {
