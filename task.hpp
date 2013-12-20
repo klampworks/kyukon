@@ -7,6 +7,7 @@
 class task {
 
 	public:
+
 		task(unsigned);
 		task();
 
@@ -42,6 +43,11 @@ class task {
 		bool operator()(const task *t1, const task *t2) {
 			return (t1->get_priority() >= t2->get_priority());
 		}
+
+		enum task_target {
+			STRING,	
+			FILE,
+		};
 
 	protected:
 		std::string url, ref, data, filepath;
