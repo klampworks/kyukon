@@ -25,8 +25,6 @@ std::vector<unsigned> thread_ids;
 std::map<unsigned /*domain_id*/, domain_settings> settings;
 std::map<unsigned /*domain_id*/, std::map<unsigned /*thread_id*/, long>> next_hit;
 
-std::mutex global_mutex;
-
 void thread_run(const std::pair<std::string, bool>&, unsigned);
 
 void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
@@ -63,11 +61,9 @@ void add_task(task *t, unsigned domain_id) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
-	//settings[domain_id].list_mutex->lock();
-	global_mutex.lock();
+	settings[domain_id].list_mutex->lock();
 	my_task_list->push(t);
-	global_mutex.unlock();
-	//settings[domain_id].list_mutex->unlock();
+	settings[domain_id].list_mutex->unlock();
 }
 
 void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
@@ -114,8 +110,7 @@ task* get_task(unsigned thread_no) {
 		return nullptr;
 
 	task *ret = nullptr;
-	//settings[domain].list_mutex->lock();
-	global_mutex.lock();
+	settings[domain].list_mutex->lock();
 
 	long tmp_time = time(NULL);
 
@@ -132,8 +127,7 @@ task* get_task(unsigned thread_no) {
 			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
 	}
 
-	global_mutex.unlock();
-	//settings[domain].list_mutex->unlock();
+	settings[domain].list_mutex->unlock();
 	return ret;
 }
 
