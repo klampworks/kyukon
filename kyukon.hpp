@@ -22,6 +22,13 @@ struct domain_settings {
 		fillup = nullptr;
 		do_fillup = true;
 	}
+
+	void operator=(domain_settings &&other) {
+		
+		std::swap(fillup, other.fillup);
+		interval = other.interval;
+		do_fillup = other.do_fillup;
+	}
 };
 
 namespace kyukon {
