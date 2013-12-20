@@ -11,6 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <cassert>
 
 namespace kyukon {
 
@@ -69,7 +70,7 @@ void add_task(task *t, unsigned domain_id) {
 	//settings[domain_id].list_mutex->unlock();
 }
 
-void signup(unsigned domain_id, int interval, void(*fillup)()) {
+void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
 
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) != domain_ids.end()) {
 		std::cout << "Domain: " << domain_id << " has already been registered." << std::endl;
@@ -122,9 +123,11 @@ task* get_task(unsigned thread_no) {
 		settings[domain].task_list.pop();
 		
 	} else {
-		if (settings[domain].do_fillup && settings[domain].fillup)
-			settings[domain].fillup();
-		else
+		std::cout << settings[domain].do_fillup << (bool)settings[domain].fillup << std::endl;
+		if (settings[domain].do_fillup && settings[domain].fillup) {
+
+		//	settings[domain].fillup();
+		} else
 			std::cout << "WARNING, queue is empty and no fillup function as been set for domain " << domain << std::endl;
 	}
 
@@ -161,7 +164,6 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 		long dom = current_task->get_domain_id();
 
 		next_hit[dom][threadno] = time(NULL) + settings[dom].interval;
-
 		if (current_task->get_callback()) {
 			std::thread(current_task->get_callback(), current_task).detach();
 		} else
