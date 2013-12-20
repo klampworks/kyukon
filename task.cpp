@@ -28,14 +28,6 @@ task::task(std::string &&url_p, std::string &&ref_p,
 	target = target_p;
 }
 
-void task::prepare_task(const std::string &url, const std::string &ref, 
-			const std::function<void(task*)> &callback) {
-
-	set_url(url);
-	set_ref(ref);
-	set_callback(callback);
-}
-
 void task::prepare_result(const std::string &data, const long &status_code, 
 			const double &data_size) {
 
