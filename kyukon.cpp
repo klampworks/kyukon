@@ -54,16 +54,17 @@ void add_task(task *t, unsigned domain_id) {
 		return;
 	}
 
-	auto *my_task_list = &settings[domain_id].task_list;
+	// Grab a reference to the settings struct for the domain we are interested in.
+	domain_settings &set = settings[domain_id];
 
-	while (my_task_list->size() > max_queue_length) {
+	while (set.task_list.size() > max_queue_length) {
 		std::cout << "Queue limit reached! Waiting..." << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 
-	settings[domain_id].list_mutex.lock();
-	my_task_list->push(t);
-	settings[domain_id].list_mutex.unlock();
+	set.list_mutex.lock();
+	set.task_list.push(t);
+	set.list_mutex.unlock();
 }
 
 void signup(unsigned domain_id, int interval, std::function<void()> fillup) {
