@@ -94,6 +94,19 @@ unsigned signup(int interval, std::function<void()> fillup) {
 	return new_id;
 }
 
+void unregister(unsigned domain_id) {
+
+	auto it = std::find(domain_ids.begin(), domain_ids.end(), domain_id);
+	
+	if (it == domain_ids.end()) {
+		std::cout << "Unregistered domain_id " << domain_id << std::endl;
+		return;
+	}
+
+	//TODO This is a resource leak since it does not clean up settings and next_hit.
+	domain_ids.erase(it);
+}
+
 task* get_task(unsigned thread_no) {
 
 	long now = time(NULL);
