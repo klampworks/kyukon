@@ -134,6 +134,10 @@ task* get_task(unsigned thread_no) {
 		else
 			std::cout << "WARNING, queue is empty and no fillup function as "
 			"been set for domain " << domain << std::endl;
+
+			//TODO is this ok?
+			//Increment the next hit by an arbitrary value to avoid wasting time.
+			next_hit[domain][thread_no] += 10;
 	}
 
 	set.list_mutex.unlock();
