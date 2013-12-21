@@ -35,6 +35,7 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 		std::string a = proxy_info[i].first;
 		bool b = proxy_info[i].second;
+		std::cout << i << std::endl;
 		std::thread(thread_run, proxy_info[i], i).detach();
 		thread_ids.push_back(i);
 	}
@@ -137,18 +138,20 @@ task* get_task(unsigned thread_no) {
 
 	long tmp_time = time(NULL);
 
+		std::cout << thread_no << ": queue size = " << set.task_list.size() << " for domain id " << domain << std::endl;
 	if (!set.task_list.empty()) {
 
 		ret = set.task_list.top();
 		set.task_list.pop();
 		
 	} else {
+		
 
 		if (set.do_fillup && set.fillup)
 			set.fillup();
 		else
-			//std::cout << "WARNING, queue is empty and no fillup function as "
-			//"been set for domain " << domain << std::endl;
+			std::cout << thread_no << ": WARNING, queue is empty and no fillup function as "
+			"been set for domain " << domain << std::endl;
 
 			//TODO is this ok?
 			//Increment the next hit by an arbitrary value to avoid wasting time.
@@ -166,12 +169,14 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 	const std::string my_threadno = std::to_string(threadno);
 
+	std::cout << "Starting thread " << my_threadno << std::endl;
+
 	task *current_task = nullptr;
 
 	for(;;) {
 
 		do {
-			if (!keep_going) return;
+			if (!keep_going) goto END;
 
 			current_task = get_task(threadno);
 
@@ -193,13 +198,20 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 		} else
 			delete current_task;
 	}
+
+END:
+	//Remove itself from the list of threads.
+	auto it = std::find(thread_ids.begin(), thread_ids.end(), threadno);
+	thread_ids.erase(it);
 }
 
 void stop() {
 	
 	std::cout << "Stopping Kyukon and destroying threads..." << std::endl;
-	thread_ids.clear();
 	keep_going = false;
+	while(!thread_ids.empty()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 }
 
 }//namespace
