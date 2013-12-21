@@ -15,6 +15,40 @@ unsigned domain_id = 0;
 volatile bool keep_alive = true;
 volatile int count = 0;
 
+BOOST_AUTO_TEST_CASE(check_connection) {
+
+	std::cout << "Checking connection..." << std::endl;
+
+	std::vector<std::pair<std::string, bool>> p = {
+		{"", false},
+		{"", false}
+	};
+	kyukon::init(p);
+
+	domain_id = kyukon::signup(0, nullptr);
+	kyukon::set_do_fillup(domain_id, false);
+
+	volatile bool done = false;
+
+	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+		task::STRING, [&done](task *tt){ 
+
+			if (tt->get_data().empty()) {
+				std::cout << "No content recieved, are you sure "
+				"the webserver is running?" << std::endl;
+				BOOST_REQUIRE(false);
+			}
+
+			kyukon::stop();
+			done = true;});
+
+	kyukon::add_task(t);
+
+	while(!done);
+
+	std::cout << "...we seem to have a connection to the test server." << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	std::vector<std::pair<std::string, bool>> p = {
