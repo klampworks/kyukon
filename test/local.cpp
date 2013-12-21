@@ -4,6 +4,8 @@
 #include "../task.hpp"
 #include <iostream>
 #include <sstream>
+#include <thread>
+#include <chrono>
 
 std::vector<std::string> parse_index(const std::string &);
 void process_index(task*);
@@ -46,7 +48,9 @@ BOOST_AUTO_TEST_CASE(check_connection) {
 
 	while(!done);
 
-	std::cout << "...we seem to have a connection to the test server." << std::endl;
+	kyukon::unregister(domain_id);
+
+	std::cout << "...we seem to have a connection to the test server.\n" << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE( free_test_function ) {
