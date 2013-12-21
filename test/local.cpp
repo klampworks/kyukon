@@ -13,6 +13,10 @@ void items_callback(task*);
 void man_callback(task*);
 unsigned domain_id = 0;
 
+//This is a hack to allow the interval test to only download 2 pages without copy and pasting
+//a bunch of code.
+bool two_bit_hack = true;
+
 //Prevent the while loops from optimising itself out.
 volatile bool keep_alive = true;
 volatile int count = 0;
@@ -73,9 +77,8 @@ BOOST_AUTO_TEST_CASE(download_and_validate) {
 
 	kyukon::unregister(domain_id);
 	keep_alive = true;
-	count = 0;
 
-	std::cout << "Validating checksums..." << std::endl;
+	std::cout << "Validating checksums...\n" << std::endl;
 	//Inverted because 0 means no errors for exit codes.
 	BOOST_CHECK(!system("md5sum -c manifest"));
 }
@@ -84,9 +87,10 @@ BOOST_AUTO_TEST_CASE(interval) {
 
 	std::vector<std::pair<std::string, bool>> p = {
 		{"", false},
-		{"", false}
 	};
 	kyukon::init(p);
+
+	two_bit_hack=false;
 
 	long start = time(NULL);
 
@@ -102,10 +106,9 @@ BOOST_AUTO_TEST_CASE(interval) {
 
 	long end = time(NULL);
 
-	std::cout << "Validating time..." << std::endl;
-	//With a 5 second interval, 2 threads and 12 items it should not be possible to
-	//finish in less than 20 seconds.
-	BOOST_CHECK((end-start) > 20);
+	std::cout << "Validating time...\n" << std::endl;
+
+	BOOST_CHECK((end-start) > 5);
 }
 
 void process_index(task *tt) {
@@ -116,7 +119,11 @@ void process_index(task *tt) {
 		BOOST_REQUIRE(false);
 	}
 
-	std::vector<std::string> l = parse_index(tt->get_data());
+	std::vector<std::string> l;
+
+	if (two_bit_hack)
+		l = parse_index(tt->get_data());
+
 	delete tt;
 
 	const char *path = "192.168.100.136/dl/";
@@ -155,8 +162,8 @@ std::vector<std::string> parse_index(const std::string &data) {
 void man_callback(task *t) {
 
 	while(count < 10);
-	keep_alive = false;
 	kyukon::stop();
+	keep_alive = false;
 }
 
 void items_callback(task *t) {
