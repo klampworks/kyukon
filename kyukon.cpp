@@ -41,7 +41,7 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 	keep_going = true;
 
-	std::cout << "Number of threads = " << number_of_threads << std::endl;
+	std::cout << "Initialising Kyukon with " << number_of_threads << " threads." << std::endl;
 }
 
 void set_do_fillup(bool b, unsigned domain_id) {
@@ -183,6 +183,8 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 }
 
 void stop() {
+	
+	std::cout << "Stopping Kyukon and destroying threads..." << std::endl;
 	keep_going = false;
 }
 
