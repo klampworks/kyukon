@@ -39,6 +39,8 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 		thread_ids.push_back(i);
 	}
 
+	keep_going = true;
+
 	std::cout << "Number of threads = " << number_of_threads << std::endl;
 }
 
