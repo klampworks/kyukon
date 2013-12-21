@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(check_connection) {
 	std::cout << "...we seem to have a connection to the test server.\n" << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE( free_test_function ) {
+BOOST_AUTO_TEST_CASE(download_and_validate) {
 
 	std::vector<std::pair<std::string, bool>> p = {
 		{"", false},
@@ -71,9 +71,41 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	while(keep_alive);
 
+	kyukon::unregister(domain_id);
+	keep_alive = true;
+	count = 0;
+
 	std::cout << "Validating checksums..." << std::endl;
 	//Inverted because 0 means no errors for exit codes.
 	BOOST_CHECK(!system("md5sum -c manifest"));
+}
+
+BOOST_AUTO_TEST_CASE(interval) {
+
+	std::vector<std::pair<std::string, bool>> p = {
+		{"", false},
+		{"", false}
+	};
+	kyukon::init(p);
+
+	long start = time(NULL);
+
+	domain_id = kyukon::signup(5, nullptr);
+	kyukon::set_do_fillup(domain_id, false);
+
+	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+		task::STRING, &process_index);
+
+	kyukon::add_task(t);
+
+	while(keep_alive);
+
+	long end = time(NULL);
+
+	std::cout << "Validating time..." << std::endl;
+	//With a 5 second interval, 2 threads and 12 items it should not be possible to
+	//finish in less than 20 seconds.
+	BOOST_CHECK((end-start) > 20);
 }
 
 void process_index(task *tt) {
