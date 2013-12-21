@@ -198,6 +198,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 void stop() {
 	
 	std::cout << "Stopping Kyukon and destroying threads..." << std::endl;
+	thread_ids.clear();
 	keep_going = false;
 }
 
