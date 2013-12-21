@@ -138,7 +138,6 @@ task* get_task(unsigned thread_no) {
 
 	long tmp_time = time(NULL);
 
-		std::cout << thread_no << ": queue size = " << set.task_list.size() << " for domain id " << domain << std::endl;
 	if (!set.task_list.empty()) {
 
 		ret = set.task_list.top();
@@ -150,8 +149,8 @@ task* get_task(unsigned thread_no) {
 		if (set.do_fillup && set.fillup)
 			set.fillup();
 		else
-			std::cout << thread_no << ": WARNING, queue is empty and no fillup function as "
-			"been set for domain " << domain << std::endl;
+			//std::cout << thread_no << ": WARNING, queue is empty and no fillup function as "
+			//"been set for domain " << domain << std::endl;
 
 			//TODO is this ok?
 			//Increment the next hit by an arbitrary value to avoid wasting time.
@@ -168,8 +167,6 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 	kon m_kon(proxy_info.first, proxy_info.second);
 
 	const std::string my_threadno = std::to_string(threadno);
-
-	std::cout << "Starting thread " << my_threadno << std::endl;
 
 	task *current_task = nullptr;
 
