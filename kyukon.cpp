@@ -96,9 +96,28 @@ task* get_task(unsigned thread_no) {
 
 	long now = time(NULL);
 	long min = now;
-	unsigned domain = 0;
+	long long domain = -1;
+
+	//For each domain...
+	for (unsigned &d : domain_ids) {
+
+		//Find the next hit timestamp for this domain.
+		long tmp_hit = next_hit[d][thread_no];
+
+		//If it is the eearlist timestamp and the list is not empty make a note.
+		if (tmp_hit < min && !settings[d].task_list.empty()) {
+			domain = d;
+			min = tmp_hit;
+		}
+	}
+
+	//This means that either all domain lists are empty or it is too soon for
+	//this thread to hit any domains again.
+	if (domain == -1)
+		return nullptr;
 
 	//TODO The invervals dont seem to be working...
+	/*
 	for (auto &a: next_hit) {
 		
 		long tmp_hit = a.second[thread_no];
@@ -109,10 +128,13 @@ task* get_task(unsigned thread_no) {
 			min = tmp_hit;
 		}
 	}
+	*/
 
 	//TODO this conditional will be wrong as some point in time.
+	/*
 	if (min == now)
 		return nullptr;
+		*/
 
 	task *ret = nullptr;
 
