@@ -33,11 +33,18 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 
 	while(keep_alive);
 
+	std::cout << "Validating checksums..." << std::endl;
 	//Inverted because 0 means no errors for exit codes.
 	BOOST_CHECK(!system("md5sum -c manifest"));
 }
 
 void process_index(task *tt) {
+
+	if (tt->get_data().empty()) {
+		std::cout << "No content recieved, are you sure "
+		"the webserver is running?" << std::endl;
+		BOOST_REQUIRE(false);
+	}
 
 	std::vector<std::string> l = parse_index(tt->get_data());
 	delete tt;
