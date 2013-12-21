@@ -35,7 +35,6 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 		std::string a = proxy_info[i].first;
 		bool b = proxy_info[i].second;
-		std::cout << i << std::endl;
 		std::thread(thread_run, proxy_info[i], i).detach();
 		thread_ids.push_back(i);
 	}
