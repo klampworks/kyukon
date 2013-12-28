@@ -29,6 +29,15 @@ void thread_run(const std::pair<std::string, bool>&, unsigned);
 
 void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
+	if (!thread_ids.empty()) {
+
+		std::cout << "Kyukon is already running!\n" 
+		"Please call kyukon::stop() to reset everything." << 
+		std::endl;
+
+		return;
+	}
+
 	number_of_threads = proxy_info.size();
 
 	for (unsigned i = 0; i < number_of_threads; i++) {
@@ -167,6 +176,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 	const std::string my_threadno = std::to_string(threadno);
 
+	std::cout << "Starting thread " << my_threadno << std::endl;
 	task *current_task = nullptr;
 
 	for(;;) {
@@ -197,6 +207,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 END:
 	//Remove itself from the list of threads.
+	std::cout << "Removing thread " << threadno << std::endl;
 	auto it = std::find(thread_ids.begin(), thread_ids.end(), threadno);
 	thread_ids.erase(it);
 }
@@ -205,6 +216,7 @@ void stop() {
 	
 	std::cout << "Stopping Kyukon and destroying threads..." << std::endl;
 	keep_going = false;
+
 	while(!thread_ids.empty()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
