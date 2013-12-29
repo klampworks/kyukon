@@ -150,9 +150,11 @@ task* get_task(unsigned thread_no) {
 
 		ret = set.task_list.top();
 		set.task_list.pop();
+		set.list_mutex.unlock();
 		
 	} else {
 		
+		set.list_mutex.unlock();
 
 		if (set.do_fillup && set.fillup)
 			set.fillup();
@@ -165,7 +167,6 @@ task* get_task(unsigned thread_no) {
 			next_hit[domain][thread_no] += 10;
 	}
 
-	set.list_mutex.unlock();
 	return ret;
 }
 
