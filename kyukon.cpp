@@ -156,15 +156,20 @@ task* get_task(unsigned thread_no) {
 		
 		set.list_mutex.unlock();
 
-		if (set.do_fillup && set.fillup)
+		if (set.do_fillup && set.fillup) {
+
+			//TODO this is a dumb way of preventing double fillups.
+			set.do_fillup = false;
+
 			set.fillup();
-		else
+		} else {
 			//std::cout << thread_no << ": WARNING, queue is empty and no fillup function as "
 			//"been set for domain " << domain << std::endl;
 
 			//TODO is this ok?
 			//Increment the next hit by an arbitrary value to avoid wasting time.
 			next_hit[domain][thread_no] += 10;
+		}
 	}
 
 	return ret;
