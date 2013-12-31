@@ -81,12 +81,8 @@ void task::set_filepath(const std::string &filepath) {
 	this->filepath =filepath;
 }
 
-void task::set_max_retries(unsigned max_retries) {
-	this->max_retries = max_retries;
-}
-
-bool task::inc_retries() {
-	return ++retries == max_retries;
+unsigned task::inc_retries() {
+	return ++retries;
 }
 
 void task::set_curl_result(std::string &&res) {

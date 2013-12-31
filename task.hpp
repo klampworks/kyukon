@@ -35,8 +35,7 @@ class task {
 		void set_target_string();
 		void set_priority(const int &priority);
 		void inc_priority();
-		void set_max_retries(unsigned);
-		bool inc_retries(); 
+		unsigned inc_retries(); 
 		void set_filepath(const std::string &filepath);
 		void set_curl_result(std::string &&);
 
@@ -67,6 +66,6 @@ class task {
 		std::function<void(task*)> callback;
 		task_target target; 
 		int priority;
-		unsigned max_retries, retries;
+		unsigned retries;
 		unsigned domain_id;
 };
