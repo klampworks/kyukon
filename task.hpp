@@ -38,6 +38,7 @@ class task {
 		void set_max_retries(unsigned);
 		bool inc_retries(); 
 		void set_filepath(const std::string &filepath);
+		void set_curl_result(int);
 
 		std::string get_url() const;
 		std::string get_ref() const;
@@ -50,6 +51,7 @@ class task {
 		const std::string get_filepath()const;
 		unsigned get_retries() const;
 		unsigned get_domain_id() const;
+		int get_curl_result() const;
 
 		bool operator()(const task *t1, const task *t2) {
 			return (t1->get_priority() >= t2->get_priority());
@@ -58,6 +60,7 @@ class task {
 
 	protected:
 		std::string url, ref, data, filepath;
+		int curl_result;
 		long status_code;
 		double data_size;
 		std::function<void(task*)> callback;
