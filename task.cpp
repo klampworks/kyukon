@@ -29,12 +29,12 @@ task::task(unsigned domain_id, std::string &&url_p, std::string &&ref_p,
 	target = target_p;
 }
 
-void task::prepare_result(const std::string &data, const long &status_code, 
-			const double &data_size) {
+void task::prepare_result(const std::string &data, long &&status_code, 
+			double &&data_size) {
 
 	set_data(data);
-	set_status_code(status_code);
-	set_data_size(data_size);
+	set_status_code(std::move(status_code));
+	set_data_size(std::move(data_size));
 }
 
 void task::set_url(const std::string &url) {
@@ -49,12 +49,12 @@ void task::set_data(const std::string &data) {
 	this->data = data;
 }
 
-void task::set_status_code(const long &status_code) {
-	this->status_code = status_code;
+void task::set_status_code(long &&status_code) {
+	std::swap(this->status_code, status_code);
 }
 
-void task::set_data_size(const double &data_size) {
-	this->data_size = data_size;
+void task::set_data_size(double &&data_size) {
+	std::swap(this->data_size, data_size);
 }
 
 void task::set_callback(const std::function<void(task*)> &callback) {

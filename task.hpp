@@ -22,13 +22,14 @@ class task {
 		task(unsigned, std::string &&url_p, std::string &&ref_p, 
 			task_target target_p, std::function<void(task*)> &&callback_p);
 
-		void prepare_result(const std::string &data, const long &status_code, const double &data_size);
+		void prepare_result(const std::string &data, long &&status_code, 
+			double &&data_size);
 
 		void set_url(const std::string &url);
 		void set_ref(const std::string &ref);
 		void set_data(const std::string &data);
-		void set_status_code(const long &status_code);
-		void set_data_size(const double &data_size);
+		void set_status_code(long &&status_code);
+		void set_data_size(double &&data_size);
 		void set_callback(const std::function<void(task*)> &callback);
 		void set_target_file();
 		void set_target_string();

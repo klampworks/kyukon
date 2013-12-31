@@ -70,8 +70,8 @@ void kon::grab(task *t) {
 	curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &dl);
 
 	//TODO std::move could be used here.
-	t->set_status_code(code);
-	t->set_data_size(dl);
+	t->set_status_code(std::move(code));
+	t->set_data_size(std::move(dl));
 	t->set_data(mi);
 }
 
