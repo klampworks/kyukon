@@ -11,6 +11,10 @@ kon::kon(const std::string &proxy_address, bool socks) {
 
 	init_curl();
 
+
+	//TODO remove this.
+	curl_easy_setopt(this->curl, CURLOPT_TIMEOUT, 5); 
+
 	if (!proxy_address.empty())
 		curl_easy_setopt(this->curl, CURLOPT_PROXY, proxy_address.c_str()); 
 
@@ -57,7 +61,7 @@ void kon::grab(task *t) {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data_file);
 	}
 
-	int res = curl_easy_perform(curl);
+	CURLcode res = curl_easy_perform(curl);
 	
 	//It is important to close the file otherwise a chunk of the end may not be written.
 	if (my_file)
@@ -72,7 +76,7 @@ void kon::grab(task *t) {
 	t->set_status_code(std::move(code));
 	t->set_data_size(std::move(dl));
 	t->set_data(std::move(mi));
-	t->set_curl_result(res);
+	t->set_curl_result(curl_easy_strerror(res));
 }
 
 void kon::make_filepath(std::string &mi, const task *t) {

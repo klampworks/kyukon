@@ -89,7 +89,7 @@ bool task::inc_retries() {
 	return ++retries == max_retries;
 }
 
-void task::set_curl_result(int res) {
+void task::set_curl_result(std::string &&res) {
 	curl_result = res;
 }
 
@@ -137,6 +137,6 @@ unsigned task::get_domain_id() const {
 	return domain_id;
 }
 
-int task::get_curl_result() const {
+std::string task::get_curl_result() const {
 	return curl_result;
 }
