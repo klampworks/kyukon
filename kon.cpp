@@ -76,7 +76,9 @@ void kon::grab(task *t) {
 	t->set_status_code(std::move(code));
 	t->set_data_size(std::move(dl));
 	t->set_data(std::move(mi));
-	t->set_curl_result(curl_easy_strerror(res));
+
+	if (res)
+		t->set_curl_result(curl_easy_strerror(res));
 }
 
 void kon::make_filepath(std::string &mi, const task *t) {
