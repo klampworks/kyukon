@@ -27,7 +27,8 @@ void kon::init_curl() {
 	
 	//Windows 8, Internet Explorer 10, fairly standard.
 	//TODO Pick random user agents from a pool to avoid profiling. 
-	static const char *default_ua = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+	static const char *default_ua = 
+		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
 
 	curl_easy_setopt(this->curl, CURLOPT_USERAGENT, default_ua);
 }
@@ -43,7 +44,7 @@ void kon::grab(task *t) {
 	curl_easy_setopt(curl, CURLOPT_REFERER, t->get_ref().c_str());
 
 	//Do we want this data as a file or string?
-	if (!t->get_target()) {
+	if (t->get_target() == task::STRING) {
 		//string
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &mi);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data_string);
