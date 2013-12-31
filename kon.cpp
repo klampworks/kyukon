@@ -69,10 +69,9 @@ void kon::grab(task *t) {
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
 	curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &dl);
 
-	//TODO std::move could be used here.
 	t->set_status_code(std::move(code));
 	t->set_data_size(std::move(dl));
-	t->set_data(mi);
+	t->set_data(std::move(mi));
 }
 
 void kon::make_filepath(std::string &mi, const task *t) {

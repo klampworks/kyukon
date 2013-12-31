@@ -29,10 +29,10 @@ task::task(unsigned domain_id, std::string &&url_p, std::string &&ref_p,
 	target = target_p;
 }
 
-void task::prepare_result(const std::string &data, long &&status_code, 
+void task::prepare_result(std::string &&data, long &&status_code, 
 			double &&data_size) {
 
-	set_data(data);
+	set_data(std::move(data));
 	set_status_code(std::move(status_code));
 	set_data_size(std::move(data_size));
 }
@@ -45,8 +45,8 @@ void task::set_ref(const std::string &ref) {
 	this->ref = ref;
 }
 
-void task::set_data(const std::string &data) {
-	this->data = data;
+void task::set_data(std::string &&data) {
+	std::swap(this->data, data);
 }
 
 void task::set_status_code(long &&status_code) {
