@@ -17,7 +17,7 @@ namespace kyukon {
 
 bool keep_going = true;
 unsigned number_of_threads;
-unsigned max_queue_length = 100;
+unsigned max_queue_length = 10000;
 
 std::vector<unsigned> domain_ids;
 std::vector<unsigned> thread_ids;
@@ -71,7 +71,7 @@ void add_task(task *t) {
 
 	while (set.task_list.size() > max_queue_length) {
 		std::cout << "Queue limit reached! Waiting..." << std::endl;
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::seconds(30));
 	}
 
 	set.list_mutex.lock();
