@@ -1,45 +1,44 @@
 #include "kon.hpp"
-
 #include <sstream>
 #include <unistd.h>
 
-kon::kon() {
+kon::kon() 
+{
 	init_curl();
 }
 
-kon::kon(const std::string &proxy_address, bool socks) {
-
+kon::kon(const std::string &proxy_address, bool socks) 
+{
 	init_curl();
-
-
-	//TODO remove this.
-	curl_easy_setopt(this->curl, CURLOPT_TIMEOUT, 5); 
 
 	if (!proxy_address.empty())
-		curl_easy_setopt(this->curl, CURLOPT_PROXY, proxy_address.c_str()); 
+		curl_easy_setopt(this->curl, 
+			CURLOPT_PROXY, proxy_address.c_str()); 
 
-	//IMPORTANT to prevent DNS leaks.
+	/* IMPORTANT to prevent DNS leaks. */
 	if (socks)
-		curl_easy_setopt(this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME); 
+		curl_easy_setopt(this->curl, CURLOPT_PROXYTYPE, 
+			CURLPROXY_SOCKS5_HOSTNAME); 
 	
 }
 
-void kon::init_curl() {
-
-	//Initialise our curl handle.
+void kon::init_curl() 
+{
+	/* Initialise our curl handle. */
 	this->curl = curl_easy_init();
 	
-	//Windows 8, Internet Explorer 10, fairly standard.
-	//TODO Pick random user agents from a pool to avoid profiling. 
+	/* Windows 8, Internet Explorer 10, fairly standard. */
+	/* TODO Pick random user agents from a pool to avoid profiling. */
 	static const char *default_ua = 
-		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; "
+		"Trident/6.0)";
 
 	curl_easy_setopt(this->curl, CURLOPT_USERAGENT, default_ua);
 }
 
-void kon::grab(task *t) {
-				
-	//Filename or HTML goes here.
+void kon::grab(task *t) 
+{
+	/* Filename or HTML goes in this variable. */
 	std::string mi;
 
 	FILE *my_file = 0;
@@ -47,13 +46,13 @@ void kon::grab(task *t) {
 	curl_easy_setopt(curl, CURLOPT_URL, t->get_url().c_str());
 	curl_easy_setopt(curl, CURLOPT_REFERER, t->get_ref().c_str());
 
-	//Do we want this data as a file or string?
+	/* Do we want this data as a file or string? */
 	if (t->get_target() == task::STRING) {
-		//string
+		/* string */
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &mi);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data_string);
 	} else {
-		//file
+		/* file */
 		make_filepath(mi, t);
 		my_file = fopen(mi.c_str(), "wb+");
 
@@ -63,7 +62,8 @@ void kon::grab(task *t) {
 
 	CURLcode res = curl_easy_perform(curl);
 	
-	//It is important to close the file otherwise a chunk of the end may not be written.
+	/* It is important to close the file otherwise a chunk of 
+	 * the end may not be written. */
 	if (my_file)
 		fclose(my_file);
 	
@@ -81,27 +81,29 @@ void kon::grab(task *t) {
 		t->set_curl_result(curl_easy_strerror(res));
 }
 
-void kon::make_filepath(std::string &mi, const task *t) {
-
+void kon::make_filepath(std::string &mi, const task *t) 
+{
 	unsigned int offset = t->get_url().find_last_of('/') + 1;
 
 	if (offset < t->get_url().size()) {
 		mi = t->get_filepath() + t->get_url().substr(offset);
 	} else {
-		//TODO Refactor, this never happens.
+		/* TODO Refactor, this never happens. */
 		mi = "dsklhf";
 	}
 }
 
-size_t kon::write_data_file(char *ptr, size_t size, size_t nmemb, FILE *stream) {
-
+size_t kon::write_data_file(char *ptr, size_t size, 
+	size_t nmemb, FILE *stream) 
+{
 	size_t written;
 	written = fwrite(ptr, size, nmemb, stream);
 	return written;
 }
 
-size_t kon::write_data_string(char *ptr, size_t size, size_t nmemb, std::string *stream) {
-
+size_t kon::write_data_string(char *ptr, size_t size, 
+	size_t nmemb, std::string *stream) 
+{
 	int result = 0;
 
 	if (stream != NULL) {
