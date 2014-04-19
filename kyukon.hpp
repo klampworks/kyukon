@@ -7,12 +7,14 @@
 #include <mutex>
 #include <map>
 #include <functional>
+#include <condition_variable>
 
 struct domain_settings {
 
 	std::priority_queue<task*, std::vector<task*>, task> task_list;
 	long interval;
 	std::mutex list_mutex;
+	std::condition_variable nfull;
 	std::function<void()> fillup;
 	bool do_fillup;
 

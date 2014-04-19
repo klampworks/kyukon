@@ -25,6 +25,9 @@ std::vector<unsigned> thread_ids;
 std::map<unsigned /*domain_id*/, domain_settings> settings;
 std::map<unsigned /*domain_id*/, std::map<unsigned /*thread_id*/, long>> next_hit;
 
+std::condition_variable c_avail_dom;
+std::mutex m_avail_dom;
+
 void thread_run(const std::pair<std::string, bool>&, unsigned);
 
 void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
@@ -61,22 +64,30 @@ void add_task(task *t) {
 
 	unsigned domain_id = t->get_domain_id();
 
-	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) == domain_ids.end()) {
+	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) 
+		== domain_ids.end()) {
+
 		std::cout << "Unregistered domain_id " << domain_id << std::endl;
 		return;
 	}
 
-	// Grab a reference to the settings struct for the domain we are interested in.
+	/* Grab a reference to the settings struct for the 
+	 * domain we are interested in. */
 	domain_settings &set = settings[domain_id];
 
-	while (set.task_list.size() > max_queue_length) {
-		std::cout << "Queue limit reached! Waiting..." << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(30));
-	}
+	std::unique_lock<std::mutex> l(set.list_mutex);
 
-	set.list_mutex.lock();
+	/* Block until length of list is shorter than the max length. */
+	set.nfull.wait(l, [&set]() 
+		{ 
+			return set.task_list.size() < max_queue_length;
+		}
+	);
+
 	set.task_list.push(t);
-	set.list_mutex.unlock();
+
+	/* Notify threads waiting on empty lists. */
+	c_avail_dom.notify_one();
 }
 
 unsigned signup(int interval, std::function<void()> fillup) {
@@ -116,8 +127,10 @@ void unregister(unsigned domain_id) {
 	domain_ids.erase(it);
 }
 
-task* get_task(unsigned thread_no) {
-
+/* Find the next domain that a given thread number should service or
+ * return -1 if no suitable domains were found. */
+long long next_dom(unsigned thread_no)
+{
 	long now = time(NULL);
 	long min = now;
 	long long domain = -1;
@@ -135,27 +148,36 @@ task* get_task(unsigned thread_no) {
 		}
 	}
 
-	//This means that it is too soon for this thread to hit any domains again.
+	return domain;
+}
+
+task* get_task(unsigned thread_no) {
+
+	long long domain = -1;
+
+	std::unique_lock<std::mutex> l(m_avail_dom);
+	c_avail_dom.wait_for(l, std::chrono::seconds(5), [&domain, thread_no]() {
+		domain = next_dom(thread_no);
+		return domain != -1;
+	});
+
 	if (domain == -1)
 		return nullptr;
 
 	task *ret = nullptr;
 
 	domain_settings &set = settings[domain];
-	set.list_mutex.lock();
-
-	long tmp_time = time(NULL);
+	std::lock_guard<std::mutex> ll(set.list_mutex);
+	l.unlock();
 
 	if (!set.task_list.empty()) {
 
 		ret = set.task_list.top();
 		set.task_list.pop();
-		set.list_mutex.unlock();
+		set.nfull.notify_one();
 		
 	} else {
 		
-		set.list_mutex.unlock();
-
 		if (set.do_fillup && set.fillup) {
 
 			//TODO this is a dumb way of preventing double fillups.
@@ -163,11 +185,16 @@ task* get_task(unsigned thread_no) {
 
 			set.fillup();
 		} else {
-			//std::cout << thread_no << ": WARNING, queue is empty and no fillup function as "
-			//"been set for domain " << domain << std::endl;
+			/*
+			std::cout << thread_no << ": WARNING, queue "
+			"is empty and no fillup function as "
+			"been set for domain " << domain << std::endl;
+			*/
 
 			//TODO is this ok?
-			//Increment the next hit by an arbitrary value to avoid wasting time.
+			/*Increment the next hit by an arbitrary 
+			 * value to avoid wasting time.
+			 */
 			next_hit[domain][thread_no] += 10;
 		}
 	}
@@ -189,16 +216,14 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 		do {
 			if (!keep_going) goto END;
-
 			current_task = get_task(threadno);
-
-		//If current_task is null then wait some time and go to the start of the loop.
-		} while (!current_task && 
-			[](){std::this_thread::sleep_for(std::chrono::seconds(2)); return true;}());
+		} while (!current_task);
 		
-		std::cout << my_threadno << ": ^^^Fetching " << current_task->get_url() << std::endl;
+		std::cout << my_threadno << ": ^^^Fetching " 
+			<< current_task->get_url() << std::endl;
 		m_kon.grab(current_task);
-		std::cout << my_threadno << ": $$$Finished " << current_task->get_url() << std::endl;;
+		std::cout << my_threadno << ": $$$Finished " 
+			<< current_task->get_url() << std::endl;;
 
 
 		long dom = current_task->get_domain_id();

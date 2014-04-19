@@ -20,6 +20,7 @@ bool two_bit_hack = true;
 //Prevent the while loops from optimising itself out.
 volatile bool keep_alive = true;
 volatile int count = 0;
+const std::string ip = "192.168.100.137";
 
 BOOST_AUTO_TEST_CASE(check_connection) {
 
@@ -36,7 +37,7 @@ BOOST_AUTO_TEST_CASE(check_connection) {
 
 	volatile bool done = false;
 
-	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+	task *t = new task(domain_id, ip+"/index.html", "", 
 		task::STRING, [&done](task *tt){ 
 
 			if (tt->get_data().empty()) {
@@ -68,7 +69,7 @@ BOOST_AUTO_TEST_CASE(download_and_validate) {
 	domain_id = kyukon::signup(0, nullptr);
 	kyukon::set_do_fillup(domain_id, false);
 
-	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+	task *t = new task(domain_id, ip+"/index.html", "", 
 		task::STRING, &process_index);
 
 	kyukon::add_task(t);
@@ -97,7 +98,7 @@ BOOST_AUTO_TEST_CASE(interval) {
 	domain_id = kyukon::signup(5, nullptr);
 	kyukon::set_do_fillup(domain_id, false);
 
-	task *t = new task(domain_id, "192.168.100.136/index.html", "", 
+	task *t = new task(domain_id, ip+"/index.html", "", 
 		task::STRING, &process_index);
 
 	kyukon::add_task(t);
@@ -126,7 +127,7 @@ void process_index(task *tt) {
 
 	delete tt;
 
-	const char *path = "192.168.100.136/dl/";
+	std::string path = ip+"/dl/";
 
 	for (const auto &s : l) {
 
