@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	kyukon::init(p);
 
 	//TODO this should return a generated domain id.
-	kyukon::signup(1, domain_settings());
+	kyukon::signup(10, domain_settings());
 
 	//Create a new task.
 	task *t = new task();
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	t->set_callback(&initial_callback);
 
 	//Add the task to the queue for processing.
-	kyukon::add_task(t, 1);
+	kyukon::add_task(t, 10);
 
 	//Tell kyukon it does not need to call another function to fill up the
 	//task list, just run with what we just added.
@@ -86,7 +86,7 @@ void initial_callback(task *t) {
 
         t->set_callback(&final_callback);
 
-        kyukon::add_task(t, 1);
+        kyukon::add_task(t, 10);
 
         //Increment the number of items we expect to be returned.
         expected++;
