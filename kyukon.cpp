@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <functional>
 #include <cassert>
+#include "cpp-log/cpp_log.hpp"
 
 namespace kyukon {
 
@@ -35,9 +36,8 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 	if (!thread_ids.empty()) {
 
-		std::cout << "Kyukon is already running!\n" 
-		"Please call kyukon::stop() to reset everything." << 
-		std::endl;
+		clog::warn() << "Kyukon is already running!\n" 
+		"Please call kyukon::stop() to reset everything.";
 
 		return;
 	}
@@ -54,7 +54,8 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info) {
 
 	keep_going = true;
 
-	std::cout << "Initialising Kyukon with " << number_of_threads << " threads." << std::endl;
+	clog::info() << "Initialising Kyukon with " << number_of_threads 
+		<< " threads.";
 }
 
 void set_do_fillup(bool b, unsigned domain_id) {
@@ -68,7 +69,7 @@ void add_task(task *t) {
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) 
 		== domain_ids.end()) {
 
-		std::cout << "Unregistered domain_id " << domain_id << std::endl;
+		clog::err() << "Unregistered domain_id " << domain_id;
 		return;
 	}
 
@@ -120,7 +121,7 @@ void unregister(unsigned domain_id) {
 	auto it = std::find(domain_ids.begin(), domain_ids.end(), domain_id);
 	
 	if (it == domain_ids.end()) {
-		std::cout << "Unregistered domain_id " << domain_id << std::endl;
+		clog::err() << "Unregistered domain_id " << domain_id;
 		return;
 	}
 
@@ -210,7 +211,7 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 	const std::string my_threadno = std::to_string(threadno);
 
-	std::cout << "Starting thread " << my_threadno << std::endl;
+	clog::info() << "Starting thread " << my_threadno;
 	task *current_task = nullptr;
 
 	for(;;) {
@@ -220,11 +221,11 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 			current_task = get_task(threadno);
 		} while (!current_task);
 		
-		std::cout << my_threadno << ": ^^^Fetching " 
-			<< current_task->get_url() << std::endl;
+		clog::info() << my_threadno << ": ^^^Fetching " 
+			<< current_task->get_url();
 		m_kon.grab(current_task);
-		std::cout << my_threadno << ": $$$Finished " 
-			<< current_task->get_url() << std::endl;;
+		clog::info() << my_threadno << ": $$$Finished " 
+			<< current_task->get_url();;
 
 
 		long dom = current_task->get_domain_id();
@@ -239,14 +240,14 @@ void thread_run(const std::pair<std::string , bool> &proxy_info, unsigned thread
 
 END:
 	//Remove itself from the list of threads.
-	std::cout << "Removing thread " << threadno << std::endl;
+	clog::info() << "Removing thread " << threadno;
 	auto it = std::find(thread_ids.begin(), thread_ids.end(), threadno);
 	thread_ids.erase(it);
 }
 
 void stop() {
 	
-	std::cout << "Stopping Kyukon and destroying threads..." << std::endl;
+	clog::info() << "Stopping Kyukon and destroying threads...";
 	keep_going = false;
 
 	while(!thread_ids.empty()) {
