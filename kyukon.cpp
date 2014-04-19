@@ -1,4 +1,5 @@
 #include "kyukon.hpp"
+#include "domain_settings.hpp"
 
 #include <chrono>
 #include <queue>
