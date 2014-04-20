@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <functional>
 #include <cassert>
+
+#define CPP_LOG_INFO_COUT
+#define CPP_LOG_WARN_COUT
+#define CPP_LOG_INFO_COUT
 #include "cpp-log/cpp_log.hpp"
 
 namespace kyukon {
@@ -62,8 +66,9 @@ void set_do_fillup(bool b, unsigned domain_id) {
 	settings[domain_id].do_fillup = b;
 }
 
+#include <iostream>
 void add_task(task *t) {
-
+std::cout << "a" << std::endl;
 	unsigned domain_id = t->get_domain_id();
 
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) 
@@ -73,11 +78,16 @@ void add_task(task *t) {
 		return;
 	}
 
+std::cout << "b" << std::endl;
 	/* Grab a reference to the settings struct for the 
 	 * domain we are interested in. */
 	domain_settings &set = settings[domain_id];
 
+std::cout << "c" << std::endl;
+	clog::info() << "Waiting " << set.task_list.size() << " " 
+		<<  max_queue_length;
 	std::unique_lock<std::mutex> l(set.list_mutex);
+std::cout << "d" << std::endl;
 
 	/* Block until length of list is shorter than the max length. */
 	set.nfull.wait(l, [&set]() 
@@ -86,6 +96,7 @@ void add_task(task *t) {
 		}
 	);
 
+	clog::info() << "Adding task " << t->get_url();
 	set.task_list.push(t);
 
 	/* Notify threads waiting on empty lists. */
@@ -169,35 +180,39 @@ task* get_task(unsigned thread_no) {
 	task *ret = nullptr;
 
 	domain_settings &set = settings[domain];
-	std::lock_guard<std::mutex> ll(set.list_mutex);
 	l.unlock();
+
+	set.list_mutex.lock();
 
 	if (!set.task_list.empty()) {
 
 		ret = set.task_list.top();
 		set.task_list.pop();
+		set.list_mutex.unlock();
 		set.nfull.notify_one();
 		
 	} else {
 		
 		if (set.do_fillup && set.fillup) {
 
+			clog::info() << "Performing fillup for domain " 
+				<< domain;
+
 			//TODO this is a dumb way of preventing double fillups.
 			set.do_fillup = false;
-
+			set.list_mutex.unlock();
 			set.fillup();
 		} else {
-			/*
-			std::cout << thread_no << ": WARNING, queue "
+			clog::err() << thread_no << ": WARNING, queue "
 			"is empty and no fillup function as "
-			"been set for domain " << domain << std::endl;
-			*/
+			"been set for domain " << domain;
 
 			//TODO is this ok?
 			/*Increment the next hit by an arbitrary 
 			 * value to avoid wasting time.
 			 */
 			next_hit[domain][thread_no] += 10;
+			set.list_mutex.unlock();
 		}
 	}
 
