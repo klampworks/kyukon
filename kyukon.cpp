@@ -66,9 +66,7 @@ void set_do_fillup(bool b, unsigned domain_id) {
 	settings[domain_id].do_fillup = b;
 }
 
-#include <iostream>
 void add_task(task *t) {
-std::cout << "a" << std::endl;
 	unsigned domain_id = t->get_domain_id();
 
 	if (std::find(domain_ids.begin(), domain_ids.end(), domain_id) 
@@ -78,16 +76,11 @@ std::cout << "a" << std::endl;
 		return;
 	}
 
-std::cout << "b" << std::endl;
 	/* Grab a reference to the settings struct for the 
 	 * domain we are interested in. */
 	domain_settings &set = settings[domain_id];
 
-std::cout << "c" << std::endl;
-	clog::info() << "Waiting " << set.task_list.size() << " " 
-		<<  max_queue_length;
 	std::unique_lock<std::mutex> l(set.list_mutex);
-std::cout << "d" << std::endl;
 
 	/* Block until length of list is shorter than the max length. */
 	set.nfull.wait(l, [&set]() 
@@ -96,7 +89,6 @@ std::cout << "d" << std::endl;
 		}
 	);
 
-	clog::info() << "Adding task " << t->get_url();
 	set.task_list.push(t);
 
 	/* Notify threads waiting on empty lists. */
