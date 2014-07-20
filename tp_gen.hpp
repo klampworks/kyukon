@@ -6,14 +6,11 @@
 
 struct tp_gen : public tp_base<task> {
 
-
-	std::function<void(task)> fn;
-
-	tp_gen(unsigned thread_no, std::function<void(task)> && fn_p) 
-		: tp_base(thread_no), fn(std::move(fn_p))
+	tp_gen(unsigned thread_no) 
+		: tp_base(thread_no)
 	{}
 
 	void task_action(unsigned thread_id, task t) {
-		fn(t);
+		t.get_callback()(&t);
 	}
 };
