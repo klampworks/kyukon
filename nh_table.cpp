@@ -44,7 +44,6 @@ dom_id nh_table::next(thread_id thread)
 	long max = -1;
 
 	for (auto did : dom_ids) {
-		//if ((long tmp = (now - next(did, thread))) > max) {
 		long tmp = now - next(did, thread);
 		if (tmp > max) {
 			max = tmp;
