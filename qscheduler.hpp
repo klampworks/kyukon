@@ -11,7 +11,7 @@ class domain_settings;
 
 union thread_val {
 	std::condition_variable *cv;
-	dom_id *did;
+	dom_id dom;
 };
 
 struct qscheduler {
@@ -20,6 +20,8 @@ struct qscheduler {
 	task* get_task(unsigned thread_id);
 	dom_id reg_dom(long interval, std::function<void()> fillup_fn);
 	void unreg_dom(dom_id);
+	void resolve();
+	std::mutex resolve_m;
 
 	
 	/* dom_id 0 signifies an invalid value. */

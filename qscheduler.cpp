@@ -19,8 +19,35 @@ void qscheduler::add_task(task *t)
 	set->list_mutex.lock();
 	set->task_list.push(t);
 	set->list_mutex.unlock();
+
+	resolve();
 }
 
+void qscheduler::resolve()
+{
+	if (resolve_m.try_lock())
+		return;
+
+	// Examine each thread in turn
+	for (auto &thread : threads) {
+		
+		// Find a suitable domain for this thread
+
+		if (dom_id dom = next_hit.next(thread.first)) {
+
+			/* If a domain has been found, send the task to the 
+			 * waiting thread. */
+
+			/* Assume no parallel access. */
+			auto *cv = thread.second.cv;
+			thread.second.dom = dom;
+
+			cv->notify_one();
+		}
+	}
+
+	resolve_m.unlock();
+}
 
 task* qscheduler::get_task(thread_id thread)
 {
@@ -29,9 +56,8 @@ task* qscheduler::get_task(thread_id thread)
 	std::unique_lock<std::mutex> lk(thread_m);
 	cv->wait(lk);
 
-	/* TODO, find a cooler way of doing this. */
-	dom_id *dom = threads.at(thread).did;
-	auto &set = domains.at(*dom);
+	dom_id dom = threads.at(thread).dom;
+	auto &set = domains.at(dom);
 	set->list_mutex.lock();
 
 	task *t = set->task_list.top();	
@@ -40,7 +66,6 @@ task* qscheduler::get_task(thread_id thread)
 
 	set->list_mutex.unlock();
 	threads.erase(thread);
-	delete dom;
 	delete cv;
 	lk.unlock();
 
@@ -66,6 +91,7 @@ dom_id qscheduler::reg_dom(long interval, std::function<void()> fillup_fn)
 
 	return new_id;
 }
+
 void qscheduler::unreg_dom(dom_id)
 {}
 
