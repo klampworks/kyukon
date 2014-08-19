@@ -3,6 +3,7 @@
 #include "nh_table.hpp"
 #include <functional>
 #include <condition_variable>
+#include <thread>
 
 typedef unsigned thread_id;
 typedef unsigned dom_id;
@@ -16,14 +17,16 @@ union thread_val {
 
 struct qscheduler {
 
+	qscheduler();
 	void add_task(task*);
 	task* get_task(unsigned thread_id);
 	dom_id reg_dom(long interval, std::function<void()> fillup_fn);
 	void unreg_dom(dom_id);
 	void resolve();
 	std::mutex resolve_m;
+	bool stop;
 
-	
+	std::thread resolve_t;
 	/* dom_id 0 signifies an invalid value. */
 	dom_id latest_dom_id = 1;
 

@@ -2,7 +2,17 @@
 #include "task.hpp"
 #include "domain_settings.hpp"
 #include "cpp-log/cpp_log.hpp"
+#include <chrono>
 
+qscheduler::qscheduler()
+{
+	resolve_t = std::thread([this]() {
+		while(!this->stop) {
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			resolve();
+		}
+		this->stop = false;});
+}
 
 void qscheduler::add_task(task *t)
 {
