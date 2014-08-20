@@ -12,6 +12,7 @@ qscheduler::qscheduler()
 			resolve();
 		}
 		this->stop = false;});
+	resolve_t.detach();
 }
 
 void qscheduler::add_task(task *t)
