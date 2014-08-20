@@ -39,3 +39,17 @@ BOOST_AUTO_TEST_CASE(test_qs_add_task)
 	BOOST_CHECK(qs.domains.at(dom1)->task_list.top() == t);
 	delete t;
 }
+
+/*
+ * Adding a thread should add it to the next_hit table.
+ */
+BOOST_AUTO_TEST_CASE(test_qs_add_thread) 
+{
+	qscheduler qs;
+	thread_id thread = 2501;
+	qs.reg_thread(thread);
+	BOOST_CHECK(qs.next_hit.thread_ids.back() == thread);
+}
+	
+
+
