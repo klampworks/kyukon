@@ -50,6 +50,28 @@ BOOST_AUTO_TEST_CASE(test_qs_add_thread)
 	qs.reg_thread(thread);
 	BOOST_CHECK(qs.next_hit.thread_ids.back() == thread);
 }
-	
 
+BOOST_AUTO_TEST_CASE(test_qs_timer_resolve) 
+{
+	qscheduler qs;
+	dom_id dom1 = qs.reg_dom(0, nullptr);
 
+	task *t = new task();
+	t->domain_id = dom1;
+	qs.add_task(t);
+
+	thread_id thread = 1;
+	qs.reg_thread(thread);
+
+	task *tt = nullptr;
+	std::thread thrd([&qs, &tt, thread]() {
+		tt = qs.get_task(thread);});
+	thrd.detach();
+
+	/* TODO Keep inline with the actual interval of resolve_t(). */
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+
+	BOOST_CHECK(tt == t);
+
+	delete t;
+}
