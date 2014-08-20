@@ -75,3 +75,28 @@ BOOST_AUTO_TEST_CASE(test_qs_timer_resolve)
 
 	delete t;
 }
+
+BOOST_AUTO_TEST_CASE(test_qs_resolve_manual)
+{
+	qscheduler qs;
+	dom_id dom1 = qs.reg_dom(0, nullptr);
+
+	thread_id thread = 1;
+	qs.reg_thread(thread);
+
+	task *tt = nullptr;
+	std::thread thrd([&qs, &tt, thread]() {
+		tt = qs.get_task(thread);});
+	thrd.detach();
+
+	task *t = new task();
+	t->domain_id = dom1;
+	qs.add_task(t);
+
+	/* TODO This should be instant...*/
+	std::this_thread::sleep_for(std::chrono::seconds(6));
+	BOOST_CHECK(tt == t);
+
+	delete t;
+}
+	
