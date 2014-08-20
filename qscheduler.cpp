@@ -88,6 +88,11 @@ task* qscheduler::get_task(thread_id thread)
 	 */
 }
 
+void qscheduler::reg_thread(thread_id thread)
+{
+	next_hit.add_thread(thread);
+}
+
 dom_id qscheduler::reg_dom(long interval, std::function<void()> fillup_fn)
 {
 	dom_id new_id = latest_dom_id++;

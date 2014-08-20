@@ -21,6 +21,7 @@ struct qscheduler {
 	void add_task(task*);
 	task* get_task(unsigned thread_id);
 	dom_id reg_dom(long interval, std::function<void()> fillup_fn);
+	void reg_thread(thread_id);
 	void unreg_dom(dom_id);
 	void resolve();
 	std::mutex resolve_m;
