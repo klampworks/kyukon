@@ -36,14 +36,13 @@ void qscheduler::add_task(task *t)
 
 void qscheduler::resolve()
 {
-	if (resolve_m.try_lock())
+	if (!resolve_m.try_lock())
 		return;
 
 	// Examine each thread in turn
 	for (auto &thread : threads) {
 		
 		// Find a suitable domain for this thread
-
 		if (dom_id dom = next_hit.next(thread.first)) {
 
 			/* If a domain has been found, send the task to the 
