@@ -7,6 +7,7 @@ class task;
 #include <thread>
 #include <map>
 #include <condition_variable>
+#include <queue>
 
 union thread_val {
 	std::condition_variable *cv;
@@ -26,6 +27,11 @@ struct tscheduler {
 	std::thread resolve_t;
 
 	std::map<thread_id, thread_val> threads;
+
 	std::mutex thread_m;
 	virtual ~tscheduler();
+
+	private:
+		std::queue<task*> tasks;
+		std::mutex tasks_m;
 };

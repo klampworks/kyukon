@@ -13,8 +13,40 @@ tscheduler::tscheduler()
 	resolve_t.detach();
 }
 
-void tscheduler::add_task(task *t){}
-void tscheduler::resolve(){}
+void tscheduler::add_task(task *t)
+{
+	tasks_m.lock();
+	tasks.push(t);
+	tasks_m.unlock();
+
+	resolve();
+}
+
+void tscheduler::resolve()
+{
+	if (!resolve_m.try_lock())
+		return;
+
+	// Examine each thread in turn
+	for (auto &thread : threads) {
+
+		tasks_m.lock();
+		if (!tasks.empty()) {
+
+			auto *cv = thread.second.cv;
+
+			task *t = tasks.front();	
+			tasks.pop();	
+
+			thread.second.t = t;
+			cv->notify_one();
+		}
+		
+		tasks_m.unlock();
+	}
+
+	resolve_m.unlock();
+}
 
 task* tscheduler::get_task(thread_id thread)
 {
