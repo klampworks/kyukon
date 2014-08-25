@@ -89,12 +89,13 @@ BOOST_AUTO_TEST_CASE(test_qs_resolve_manual)
 		tt = qs.get_task(thread);});
 	thrd.detach();
 
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	task *t = new task();
 	t->domain_id = dom1;
 	qs.add_task(t);
 
-	/* TODO This should be instant...*/
-	std::this_thread::sleep_for(std::chrono::seconds(6));
+	/* This should be instant...*/
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	BOOST_CHECK(tt == t);
 
 	delete t;
