@@ -4,16 +4,7 @@
 #include "cpp-log/cpp_log.hpp"
 #include <chrono>
 
-qscheduler::qscheduler()
-{
-	resolve_t = std::thread([this]() {
-		while(!this->stop) {
-			std::this_thread::sleep_for(std::chrono::seconds(5));
-			resolve();
-		}
-		this->stop = false;});
-	resolve_t.detach();
-}
+qscheduler::qscheduler() : tscheduler() {}
 
 void qscheduler::add_task(task *t)
 {
@@ -65,27 +56,6 @@ void qscheduler::resolve()
 	}
 
 	resolve_m.unlock();
-}
-
-task* qscheduler::get_task(thread_id thread)
-{
-	std::condition_variable *cv = new std::condition_variable();
-	threads[thread].cv = cv;
-	std::unique_lock<std::mutex> lk(thread_m);
-	cv->wait(lk);
-
-	task *t = threads.at(thread).t;
-	threads.erase(thread);
-
-	delete cv;
-	lk.unlock();
-
-	return t;
-	/*
-	 * Create condition variable.
-	 * add convar to thread queue
-	 * wait on convar
-	 */
 }
 
 void qscheduler::reg_thread(thread_id thread)
