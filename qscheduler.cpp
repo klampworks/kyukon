@@ -50,7 +50,15 @@ void qscheduler::resolve()
 
 			/* Assume no parallel access. */
 			auto *cv = thread.second.cv;
-			thread.second.dom = dom;
+
+			auto &set = domains.at(dom);
+			set->list_mutex.lock();
+
+			task *t = set->task_list.top();	
+			set->task_list.pop();	
+
+			set->list_mutex.unlock();
+			thread.second.t = t;
 
 			cv->notify_one();
 		}
@@ -66,16 +74,9 @@ task* qscheduler::get_task(thread_id thread)
 	std::unique_lock<std::mutex> lk(thread_m);
 	cv->wait(lk);
 
-	dom_id dom = threads.at(thread).dom;
-	auto &set = domains.at(dom);
-	set->list_mutex.lock();
-
-	task *t = set->task_list.top();	
-	set->task_list.top();	
-
-
-	set->list_mutex.unlock();
+	task *t = threads.at(thread).t;
 	threads.erase(thread);
+
 	delete cv;
 	lk.unlock();
 

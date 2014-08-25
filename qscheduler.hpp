@@ -12,7 +12,7 @@ class domain_settings;
 
 union thread_val {
 	std::condition_variable *cv;
-	dom_id dom;
+	task *t;
 };
 
 struct qscheduler {
