@@ -1,7 +1,6 @@
 #include "task.hpp"
 #include "tscheduler.hpp"
 #include <chrono>
-
 tscheduler::tscheduler()
 {
 	resolve_t = std::thread([this]() {
@@ -69,4 +68,9 @@ task* tscheduler::get_task(thread_id thread)
 	 */
 }
 
-tscheduler::~tscheduler(){}
+tscheduler::~tscheduler()
+{
+	stop = true;		
+	while (stop)
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+}
