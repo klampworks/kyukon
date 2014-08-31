@@ -86,3 +86,10 @@ qscheduler::~qscheduler()
 	for (auto a : domains)
 		delete a.second;
 }
+
+#include <ctime>
+void qscheduler::update_nh(dom_id dom, thread_id thread)
+{
+	next_hit.update(dom, thread, 
+		time(NULL) + domains[dom]->interval);
+}

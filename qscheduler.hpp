@@ -19,6 +19,7 @@ struct qscheduler : public tscheduler {
 	void reg_thread(thread_id);
 	void unreg_dom(dom_id);
 	void resolve();
+	void update_nh(dom_id, thread_id);
 
 	/* dom_id 0 signifies an invalid value. */
 	dom_id latest_dom_id = 1;
