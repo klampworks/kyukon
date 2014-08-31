@@ -1,3 +1,4 @@
+#include "test_util.hpp"
 
 /* Registering domains should return unique dom_ids. */
 BOOST_AUTO_TEST_CASE(test_reg_domain_unique) 
@@ -62,7 +63,7 @@ BOOST_AUTO_TEST_CASE(test_qs_timer_resolve)
 	thrd.detach();
 
 	/* TODO Keep inline with the actual interval of resolve_t(). */
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(pone(qs));
 
 	BOOST_CHECK(tt == t);
 
