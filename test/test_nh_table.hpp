@@ -76,8 +76,11 @@ BOOST_AUTO_TEST_CASE(test_nh_table_next)
 
 	nh.update(dom1, thread1, 100);
 	nh.update(dom2, thread1, 0);
-	BOOST_CHECK(nh.next(thread1) == dom2);
+	BOOST_CHECK(nh.next(thread1).front() == dom2);
 
 	nh.update(dom2, thread1, 100);
-	BOOST_CHECK(nh.next(thread1) == 0);
+	auto a = nh.next(thread1);
+	for (auto aa : a)
+	std::cout << aa << std::endl;
+	BOOST_CHECK(nh.next(thread1).empty());
 }
