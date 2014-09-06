@@ -50,6 +50,7 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	//Avoid main returning until we have what we came for.
 	while(keep_alive);
 
+	kyukon::stop();
 	BOOST_CHECK( true /* test assertion */ );
 }
 
@@ -93,7 +94,8 @@ void initial_callback(task *t) {
         kyukon::add_task(t);
 
         //Increment the number of items we expect to be returned.
-        expected++;
+        if (++expected == 5)
+		break;;
     }
 }
 
