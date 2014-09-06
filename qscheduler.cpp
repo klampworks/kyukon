@@ -34,21 +34,26 @@ void qscheduler::resolve()
 	for (auto &thread : threads) {
 		
 		// Find a suitable domain for this thread
-		if (dom_id dom = next_hit.next(thread.first)) {
+		auto doms = next_hit.next(thread.first);
+		for (auto dom : doms) {
 
 			/* If a domain has been found, send the task to the 
 			 * waiting thread. */
 
-			/* Assume no parallel access. */
-			auto *cv = thread.second.cv;
-
 			auto &set = domains.at(dom);
+
+			if (set->task_list.empty())
+				continue;
+
 			set->list_mutex.lock();
 
 			task *t = set->task_list.top();	
 			set->task_list.pop();	
 
 			set->list_mutex.unlock();
+
+			/* t and cv are a union, must backup the cv. */
+			auto *cv = thread.second.cv;
 			thread.second.t = t;
 
 			cv->notify_one();
