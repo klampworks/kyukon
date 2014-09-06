@@ -92,11 +92,9 @@ qscheduler::~qscheduler()
 		delete a.second;
 }
 
-#include <ctime>
 void qscheduler::update_nh(dom_id dom, thread_id thread)
 {
-	next_hit.update(dom, thread, 
-		time(NULL) + domains[dom]->interval);
+	next_hit.update(dom, thread, domains[dom]->interval);
 }
 
 void qscheduler::set_do_fillup(bool b, unsigned domain_id)
