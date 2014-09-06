@@ -19,13 +19,14 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 		{"", false},
 		{"", false}
 	};
+
 	kyukon::init(p);
 
 	//TODO this should return a generated domain id.
-	kyukon::signup(10, domain_settings());
+	unsigned dom = kyukon::signup(10, nullptr);
 
 	//Create a new task.
-	task *t = new task();
+	task *t = new task(dom);
 
 	//Set the url to grab.
 	t->set_url("http://www.bing.com/images/search?q=hello+kitty");
@@ -40,11 +41,11 @@ BOOST_AUTO_TEST_CASE( free_test_function ) {
 	t->set_callback(&initial_callback);
 
 	//Add the task to the queue for processing.
-	kyukon::add_task(t, 10);
+	kyukon::add_task(t);
 
 	//Tell kyukon it does not need to call another function to fill up the
 	//task list, just run with what we just added.
-	kyukon::set_do_fillup(1, false);
+	kyukon::set_do_fillup(false, dom);
 
 	//Avoid main returning until we have what we came for.
 	while(keep_alive);
@@ -57,6 +58,8 @@ void initial_callback(task *t) {
     //Data is the html we have just grabbed.
     const std::string tmp = t->get_data(),
               ref = t->get_url();
+
+    unsigned dom = t->get_domain_id();
 
     //We don't need this anymore.
     delete t;
@@ -76,9 +79,10 @@ void initial_callback(task *t) {
         st = tmp.rfind("\"", pos) + 1;
         en = tmp.find("\"", st) - st;
 
-        task *t = new task();
+        task *t = new task(dom);
         t->set_url(tmp.substr(st, en));
         t->set_ref(ref);
+	;
 
         //This time we want the result in the form of a file.
         //At the moment Kyukon decides the filename based on the url.
@@ -86,7 +90,7 @@ void initial_callback(task *t) {
 
         t->set_callback(&final_callback);
 
-        kyukon::add_task(t, 10);
+        kyukon::add_task(t);
 
         //Increment the number of items we expect to be returned.
         expected++;
@@ -101,6 +105,7 @@ void final_callback(task *t) {
 
     //Once count reaches expected we know we have everything we came for,
     //tell main to exit by setiing keep_alive to false.
+    std::cout << count << " " << expected << std::endl;
     keep_alive = !(++count == expected);    
 }
 
