@@ -1,7 +1,7 @@
 #include "qscheduler.hpp"
 #include "task.hpp"
 #include "domain_settings.hpp"
-#include "cpp-log/cpp_log.hpp"
+//#include "cpp-log/cpp_log.hpp"
 #include <chrono>
 
 qscheduler::qscheduler() : tscheduler() {}
@@ -14,7 +14,7 @@ void qscheduler::add_task(task *t)
 	try {
 		set = domains.at(dom);
 	} catch (const std::out_of_range &e) {
-		clog::err() << "Unregistered domain id " << dom;
+		//clog::err() << "Unregistered domain id " << dom;
 		return;
 	}
 
