@@ -36,20 +36,30 @@ long nh_table::next(dom_id dom, thread_id thread)
 	return next_hit[std::make_pair(dom, thread)];
 }
 
-dom_id nh_table::next(thread_id thread)
+std::vector<dom_id> nh_table::next(thread_id thread)
 {
 	long now = time(NULL);
 
-	dom_id dom = 0;
-	long max = -1;
-
+	std::map<dom_id, long> times;
 	for (auto did : dom_ids) {
-		long tmp = now - next(did, thread);
-		if (tmp >= max) {
-			max = tmp;
-			dom = did;
-		}
+		times[did] = (now - next(did, thread));
 	}
 
-	return dom;
+	auto res = dom_ids;
+
+	/* Remove negative values, they cannot be hit yet. */
+	std::remove_if(res.begin(), res.end(), 
+		[&times] (dom_id a) {
+			return times[a] < 0;
+		}
+	);
+
+	/* Order by greatest value, these are the longest overdue. */
+	std::sort(res.begin(), res.end(), 
+		[&times] (dom_id a, dom_id b) {
+		       return times[a] > times[b];
+		}
+	);
+
+	return res;
 }

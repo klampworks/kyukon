@@ -21,5 +21,8 @@ struct nh_table {
 
 	void update(dom_id, thread_id, long);
 	long next(dom_id, thread_id);
-	dom_id next(thread_id);
+
+	/* Given a thread, return list of hittable domains in order
+	 * of longest overdue first. Result may be empty. */
+	std::vector<dom_id> next(thread_id);
 };
