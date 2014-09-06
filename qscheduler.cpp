@@ -98,3 +98,8 @@ void qscheduler::update_nh(dom_id dom, thread_id thread)
 	next_hit.update(dom, thread, 
 		time(NULL) + domains[dom]->interval);
 }
+
+void qscheduler::set_do_fillup(bool b, unsigned domain_id)
+{
+	domains.at(domain_id)->do_fillup = b;
+}
