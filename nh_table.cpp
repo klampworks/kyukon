@@ -44,15 +44,16 @@ std::vector<dom_id> nh_table::next(thread_id thread)
 	for (auto did : dom_ids) {
 		times[did] = (now - next(did, thread));
 	}
-
 	auto res = dom_ids;
 
 	/* Remove negative values, they cannot be hit yet. */
-	std::remove_if(res.begin(), res.end(), 
+	auto end = std::remove_if(res.begin(), res.end(), 
 		[&times] (dom_id a) {
 			return times[a] < 0;
 		}
 	);
+
+	res = std::vector<dom_id>(res.begin(), end);
 
 	/* Order by greatest value, these are the longest overdue. */
 	std::sort(res.begin(), res.end(), 
