@@ -32,6 +32,8 @@ struct tscheduler {
 	std::mutex thread_m;
 	virtual ~tscheduler();
 
+	void stopp();
+
 	private:
 		std::queue<task*> tasks;
 		std::mutex tasks_m;

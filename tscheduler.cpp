@@ -68,6 +68,22 @@ task* tscheduler::get_task(thread_id thread)
 	 */
 }
 
+void tscheduler::stopp()
+{
+	resolve_m.lock();
+
+	for (auto &thread : threads) {
+
+		auto *cv = thread.second.cv;
+		if (cv) {
+			thread.second.t = nullptr;
+			cv->notify_one();
+		}
+	}
+
+	resolve_m.unlock();
+}
+
 tscheduler::~tscheduler()
 {
 	stop = true;		
