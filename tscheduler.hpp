@@ -25,6 +25,7 @@ struct tscheduler {
 	bool stop;
 
 	std::thread resolve_t;
+	std::chrono::duration<long> resolve_t_to = std::chrono::seconds(5);
 
 	std::map<thread_id, thread_val> threads;
 

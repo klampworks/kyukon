@@ -5,7 +5,7 @@ tscheduler::tscheduler()
 {
 	resolve_t = std::thread([this]() {
 		while(!this->stop) {
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			std::this_thread::sleep_for(resolve_t_to);
 			resolve();
 		}
 		this->stop = false;});
