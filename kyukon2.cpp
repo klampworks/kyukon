@@ -15,8 +15,8 @@ namespace kyukon {
 std::vector<unsigned> qthreads;
 unsigned number_of_threads = 0;
 
-qscheduler qs;
-tscheduler ts;
+qscheduler *qs;
+tscheduler *ts;
 
 void t_thread_run(unsigned);
 void thread_run(const std::pair<std::string , bool> &, unsigned);
@@ -31,6 +31,9 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info)
 
 		return;
 	}
+
+	qs = new qscheduler;
+	ts = new tscheduler;
 
 	number_of_threads = proxy_info.size();
 
@@ -56,19 +59,19 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info)
 
 unsigned signup(int interval, std::function<void()> fillup_fn)
 {
-	return qs.reg_dom(interval, fillup_fn);
+	return qs->reg_dom(interval, fillup_fn);
 }
 
 void unregister(unsigned domain_id) {}
 
 void add_task(task *t)
 {
-	qs.add_task(t);
+	qs->add_task(t);
 }
 
 void set_do_fillup(bool b, unsigned domain_id)
 {
-	qs.set_do_fillup(b, domain_id);
+	qs->set_do_fillup(b, domain_id);
 }
 
 std::mutex qthreads_m;
@@ -78,8 +81,8 @@ void stop()
 {
 	keep_going = false;
 
-	qs.stopp();
-	ts.stopp();
+	qs->stopp();
+	ts->stopp();
 
 	while (qthreads_done.size() == qthreads.size()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -97,12 +100,12 @@ void thread_run(const std::pair<std::string , bool> &proxy_info,
 	clog::info() << "Starting thread " << my_threadno;
 	task *current_task = nullptr;
 
-	qs.reg_thread(threadno);
+	qs->reg_thread(threadno);
 
 	while (keep_going) {
 
 		std::cout << threadno << "acquiring task..." << std::endl;
-		current_task = qs.get_task(threadno);
+		current_task = qs->get_task(threadno);
 
 		if (!current_task) continue;
 
@@ -112,10 +115,10 @@ void thread_run(const std::pair<std::string , bool> &proxy_info,
 		clog::info() << my_threadno << ": $$$Finished " 
 			<< current_task->get_url();;
 
-		qs.update_nh(current_task->get_domain_id(), threadno);
+		qs->update_nh(current_task->get_domain_id(), threadno);
 
 		if (current_task->get_callback())
-			ts.add_task(current_task);
+			ts->add_task(current_task);
 		 else
 			delete current_task;
 	}
@@ -134,7 +137,7 @@ void t_thread_run(unsigned threadno)
 	task *current_task = nullptr;
 
 	while (keep_going) {
-		current_task = ts.get_task(threadno);
+		current_task = ts->get_task(threadno);
 
 		if (!current_task) continue;
 		if (current_task->get_callback())
