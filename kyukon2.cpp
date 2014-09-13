@@ -35,6 +35,7 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info)
 	qs = new qscheduler;
 	ts = new tscheduler;
 
+	keep_going = true;
 	number_of_threads = proxy_info.size();
 
 	unsigned i = 0;
@@ -50,7 +51,6 @@ void init(const std::vector<std::pair<std::string, bool>> &proxy_info)
 	std::thread(t_thread_run, i).detach();
 	qthreads.push_back(i);
 
-	keep_going = true;
 
 	clog::info() << "Initialising Kyukon with " << number_of_threads 
 		<< " threads.";
