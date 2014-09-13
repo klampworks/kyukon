@@ -84,7 +84,7 @@ void stop()
 	qs->stopp();
 	ts->stopp();
 
-	while (qthreads_done.size() == qthreads.size()) {
+	while (qthreads_done.size() != qthreads.size()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
 	}
